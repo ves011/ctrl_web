@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../res/site.css">
+<style>
+	
+	thv, tdv {border-bottom: 1px solid #ddd; text-align: center;}
+    .left_col {width: 150px; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; text-align: left;}
+    .val_col {width: 60px; border-right: 1px solid #ddd; text-align: center; border-bottom: 1px solid #ddd;}
+</style>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script type="text/javascript" src="../jsscripts/pump.js"></script>
+    <title>Pompa Foraj</title>
+</head>
+<body onload="getPumpClient()" onbeforeunload="clean_connection()"> 
+    <button id = "back", class = "back" onclick="location.href='../index.html'"></button>
+    <div id = "comerror" class = "comdiv"></div>
+    <!--<bsettings id = "settings" class = "bsettings" onclick="gotoSettings()"></bsettings> -->
+    <div id = "comstatus" class = "comdiv"></div>
+    <div class = "hdiv">
+        Pompa Foraj
+        <hr>
+        <div class = "status">
+            <table class = "status_header" style="width: 370px; padding: 1px;">
+                <tr>
+                    <td style="width:180px;">stare</td>
+                    <td style="width:10px;"></td>
+                    <td style="width:55px;">online</td>
+                    <td style="width:35px;">ON<br>OFF</td>
+                    <td><b>ERR</b></td>
+                </tr>
+            </table>
+			<button id = "bstatus" onclick = "changeStatus()" class = "button button-poss button_disabled button_uknown">
+				Set ...
+			</button>
+			<button id = "ledstatus" class = "button_led led_pos led_off"></button>
+            <button id = "ledrunning" class = "button_led ledr_pos led_off"></button>
+            <button id = "ledfault" class = "button_led ledf_pos led_off"></button>
+        </div>
+        <div class = params>
+            <table>
+                <tr>
+                    <th class="left_col"></th>
+                    <th class="val_col">Min</th>
+                    <th class="val_col">Actual</th>
+                    <th class="val_col">Max</th>
+                </tr>
+                <tr>
+                    <td class="left_col">Presiune (kPa)</td>
+                    <td id = "minP" class="val_col"></td>
+                    <td id = "pkpa" class="val_col"></td>
+                    <td id = "maxP" class="val_col"></td>
+                </tr>
+                <tr>
+                    <td class="left_col">Curent (A)</td>
+                    <td class="val_col"></td>
+                    <td id = "current" class="val_col"></td>
+                    <td class="val_col"></td>
+                </tr>
+            </table>
+        </div>
+        <button id = "startstop" class = "button button-posi button_disabled" onclick = "startPump()">
+            Start
+        </button>
+
+    </div>
+
+</body>
+</html>

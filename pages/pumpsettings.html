@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+	<script type="text/javascript" src="../jsscripts/pumpsettings.js"></script>
+	<link rel="stylesheet" href="../res/site.css">
+    <title>Pompa Foraj - setari</title>
+
+</head>
+<body onload="getPumpSettings()" onbeforeunload="clean_connection()">
+	<button id = "back", class = "back" onclick="goToPump()"></button>
+	<div id = "comerror" class = "comdiv"></div>
+	<div class = "hdiv">
+		Setari pompa foraj
+		<hr>
+		<table style = "font-size: 15px; text-align: right;">
+			<tr style = "line-height: 30px;">
+				<td style =  "width: 200px; text-align: right;">Presiunea de oprire</td>
+                <td style =  "width: 40px;"><input id = "maxp" style = "width: 40px; text-align: right;"></input></td>
+				<td style =  "width: 30px;; text-align: left;">kPa</td>
+				<td style =  "width: 65px;;"></td>
+			</tr>
+			<tr style = "line-height: 30px;">
+				<td style =  "width: 200px; text-align: right;">Presiunea de pornire</td>
+                <td style =  "width: 40px;"><input id = "minp" style = "width: 40px; text-align: right;"></input></td>
+				<td style =  "width: 30px;; text-align: left;">kPa</td>
+				<td style =  "width: 65px;;"></td>
+			</tr>
+			<tr style = "line-height: 40px;">
+				<td style =  "width: 200px; text-align: right;">0 kPa offset</td>
+                <td style =  "width: 40px;"><input id = "kpa0" style = "width: 40px; text-align: right;" readonly></input></td>
+				<td style =  "width: 30px;; text-align: left;">mV</td>
+				<td style =  "width: 75px;; text-align: center;">
+					<button class="bset0" onclick = "setOffset()">Set</button>
+				</td>
+			</tr>
+			<tr style = "line-height: 30px;">
+				<td style =  "width: 200px; text-align: right;"><hr></td>
+			</tr>
+			<tr style = "line-height: 30px;">
+				<td style =  "width: 200px; text-align: right;">curent maxim (avarie)</td>
+                <td style =  "width: 40px;"><input id = "faultc" style = "width: 40px;"></input></td>
+				<td style =  "width: 30px;; text-align: left;">mA</td>
+				<td style =  "width: 65px;;"></td>
+			</tr>
+			<tr style = "line-height: 30px;">
+				<td style =  "width: 200px; text-align: right;"><hr></td>
+			</tr>
+		</table>
+	</div>
+	<button id = "save" class = "bsc bsc_save_pos" onclick = "checkAndSave()">Save</button>
+	<button id = "cance" class = "bsc bsc_cancel_pos" onclick="goToPump()">Cancel</button>
+</body>

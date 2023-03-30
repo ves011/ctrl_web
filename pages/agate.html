@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../res/site.css">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script type="text/javascript" src="../jsscripts/agate.js"></script>
+    <title>Poarta auto</title>
+</head>
+<body onload="getGateClient()">
+    <button id = "back", class = "back" onclick="location.href='../index.html'"></button>
+	<div id = "comerror" class = "comdiv"></div>
+    <div class = "hdiv">
+        Poarta auto
+        <hr>
+        <div id = "progress" class="progress">
+            stare nedefinita
+        </div>
+        <button id = "bopen" class = "button button-posopen button_disabled" onclick="openGate()">
+            Deschide
+        </button>
+        <button id = "bclose" class = "button button-posclose button_disabled" onclick="closeGate()">
+            Inchide
+        </button>
+    </div>
+</body>
+</html>

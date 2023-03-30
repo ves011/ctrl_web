@@ -1,0 +1,234 @@
+	.hdiv /*main div */
+        {
+        position: absolute;
+        left: 0px;
+        top: 50px;
+        width: 375px;
+        height: 300px;
+        line-height: 40px;
+        vertical-align: center;
+        text-align: center;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bold;
+        font-size: 30px;
+        color: #5f5872;
+        }
+	.comdiv /* communication status div */
+        {
+        position: absolute;
+        top: 10px;
+        left: 65px;
+		width: 270px;
+		height: 40px;
+		font-family: Verdana, Geneva, Tahoma, sans-serif;
+		font-size: 15px;
+		color: red;
+        }
+	
+	.back
+		{
+		display: inline-block;
+		position: absolute;
+		top: 10px;
+        left: 5px;
+		width: 45px;
+		height: 30px;
+    	padding: 0px;
+
+    	vertical-align: center;
+
+		cursor: pointer;
+		border: none;
+		background-repeat: no-repeat;
+        background-color:#d6d4d4;
+		border-radius: 50%;
+  		box-shadow: 5px 5px #999;
+        background-image: url("../res/icons8-back-arrow-96-up.png");
+        background-size: 50px 30px;
+        background-repeat: no-repeat;
+		}
+	.back:active {background-color: #869dbe; box-shadow: 0 5px #666; transform: translateY(4px);  cursor: pointer; background-image: url("../res/icons8-back-arrow-96-down.png");}
+	.bset0
+		{
+		height: 25px;
+		width: 70px;
+		font-size: 15px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bold;
+		text-align: center;
+        cursor: pointer;
+        outline: none;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 6px 6px #999;
+		color: #6659df;
+		background-color:#d6d4d4;
+		}
+	.bset0:active {background-color: #869dbe;        box-shadow: 0 5px #666;        transform: translateY(4px);        cursor: pointer;        box-shadow: 0;    }
+	.bsc
+		{
+		position: absolute;
+		top: 320px;
+		width: 70px;
+		height: 40px;
+		font-size: 15px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bold;
+		text-align: center;
+        cursor: pointer;
+        outline: none;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 6px 6px #999;
+		color: #6659df;
+		background-color:#d6d4d4;
+		}
+	.bsc:active {background-color: #869dbe;        box-shadow: 0 5px #666;        transform: translateY(4px);        cursor: pointer;        box-shadow: 0;    }
+	.bsc_save_pos
+		{
+		left: 290px;
+		}
+	.bsc_cancel_pos
+		{
+		left: 10px;
+		}
+	.button_led
+		{
+		position: absolute;
+		height: 50;
+		width: 50;
+		border: all;
+		border-radius: 50%;
+		padding: 15px 15px;
+		cursor: none;
+		pointer-events: none;
+		color: rgb(40, 224, 86);
+        background-color: rgb(40, 224, 86);
+		}
+    .led_on 	{color: #28e056; background-color: #28e056;}
+	.led_off 	{color: #d6d4d4; background-color: #d6d4d4;}
+    .led_fault  {color: #e00202; background-color: #e00202;}
+	.led_pos	{top: 50px; left: 210px;}
+    .ledr_pos   {top: 50px; left: 260px;}
+    .ledf_pos   {top: 50px; left: 310px;}
+	.status_header /*table */
+        {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        height: 40px;
+        width: 400px; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 10px;
+        text-align: center;
+        line-height: 10px;
+        }
+	.status /* status div */
+        {
+        position: absolute;
+        left: 10px;
+        top: 50px;
+        height: 40px;
+        width: 400px; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 20px;
+        text-align: center;
+        line-height: 40px;
+        font-size: 20px;
+        }
+	.params /* params table div */
+        {
+        position: absolute;
+        top: 150px;
+        left: 20px;
+        font-size: 16px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bold;
+        text-align: left;
+        }
+	.progress
+        {
+        position: absolute;
+        left: 95px;
+        top: 60px;
+        height: 40px;
+        width: 200px;
+        text-align: center;
+        line-height: 40px;
+        font-size: 20px;
+        }
+	.bsettings
+		{
+        position: absolute;
+		display: inline-block;
+        top: 10px;
+        left: 325px;
+		width: 50px;
+    	height: 30px;
+    	padding: 0px;
+    	margin: 2px;
+    	vertical-align: center;
+		cursor: pointer;
+		border: none;
+		background-repeat: no-repeat;
+        background-color:rgb(214, 212, 212);
+		border-radius: 5px;
+  		box-shadow: 5px 5px #999;
+        background-image: url("../res/icons8-settings-50-up.png");
+        background-size: 25px 25px;
+		}
+    .bsettings:active 	{background-image: url("../res/icons8-settings-250-down.png"); 		background-color: #869dbe; 	box-shadow: 5px 5px #c0c0c0;}
+    .bsettings_disabled	{background-image: url("../res/icons8-settings-50-disabled.png"); 	background-color: #d6d4d4;	pointer-events: none;}
+    
+    .button 
+        {
+        position: absolute;
+        left: 0px;
+        padding: 15px 25px;
+        font-size: 20px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bold;
+        width: 190px;
+        height: auto;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 9px 9px #999;
+		background-color: #d6d4d4;
+        }
+	.button:active 
+        {
+        background-color: #869dbe;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+        cursor: pointer;
+        box-shadow: 0;
+        }
+    .button_enabled 
+        {
+        color: rgb(102, 89, 223);
+        background-color:rgb(214, 212, 212);
+        cursor: pointer;
+        pointer-events: all;
+        }
+    .button_disabled
+        {
+        color: rgb(188, 185, 190);
+        background-color:rgb(214, 212, 212);
+        cursor: none;
+        pointer-events: none;
+        }
+	.button:active 		{					background-color: #869dbe;	cursor: pointer;	box-shadow: 0 5px #666;	transform: translateY(4px);	box-shadow: 0;}
+    .button_enabled     {color: #6659df;	/*background-color: #d6d4d4;*/	cursor: pointer;	pointer-events: all;}
+    .button_disabled	{color: #bdbabf;    /*background-color: #d6d4d4;*/  cursor: none;       pointer-events: none;}
+    .button_online      {color: #0ab635;    /*background-color: #d6d4d4;*/  cursor: pointer;    pointer-events: all;}
+    .button_offline     {color: #6659df;	/*background-color: #d6d4d4;*/  cursor: pointer;    pointer-events: all;}
+	.button_unknown     {color: #0d0e0d;    /*background-color: #d6d4d4;*/  cursor: pointer;    pointer-events: all;}
+	.button-poss 		{top: 40px;}
+    .button-posd 		{top: 120px;}
+    .button-posi 		{top: 300px;	left: 10px}
+	.button-posopen 	{top: 120px;	left: 90px;}
+    .button-posclose 	{top: 200px;	left: 90px;}
+	
