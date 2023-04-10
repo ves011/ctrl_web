@@ -51,7 +51,7 @@ function processMessage(topic, payload, packet)
     switch(topic)
         {
         case 'gnetdev/response':
-            if(pdevName == null)
+            if(pdevName == '')
                 {
                 if(params[0].indexOf("pump") >= 0)
                     pdevName = params[1];
