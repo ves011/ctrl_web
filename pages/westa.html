@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../res/site.css">
+<style>
+	
+	thv, tdv {border-bottom: 1px solid #dddddd; text-align: center;}
+    .left_col {width: 150px; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; text-align: left;}
+    .val_col {width: 60px; border-right: 1px solid #ddd; text-align: center; border-bottom: 1px solid #ddd;}
+</style>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script type="text/javascript" src="../jsscripts/westa.js"></script>
+    <title>Statia Meteo</title>
+</head>
+<body onload="getWestaClient()">
+<div class="chart-container" style="position: relative; height:100px; width:90vw"></div>
+    <button id = "back", class = "back" onclick="location.href='../index.html'"></button>
+</div>
+<div class="chart-container" style="position: relative; height:300px; width:90vw">
+  <canvas id="tempChart"></canvas>
+</div>
+<div class="chart-container" style="position: relative; height:300px; width:90vw">
+  <canvas id="presChart"></canvas>
+</div>
+</body>
