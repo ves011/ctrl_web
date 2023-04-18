@@ -16,8 +16,11 @@ const times = [];
 const itus = [];
 var idx = 0;
 var mint, maxt, minp, maxp, minh, maxh, mini, maxi, maxtp, mintp;
+var temperatureChart = null;
+var pressureChart = null;
 function getWestaClient()
     {
+
     const url = 'ws://proxy.gnet/ws/';
     const options = 
         {
@@ -69,6 +72,8 @@ function processMessage(topic, payload, packet)
                 wtopicMonitor = topic + 'monitor';
                 client_westa.subscribe(wtopicState);
                 client_westa.subscribe(wtopicMonitor);
+                westaGetData();
+/*
                 var date = new Date();
                 date.setHours(date.getHours() - 24);
                 datestring = (date.getFullYear()) + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" +
@@ -78,6 +83,7 @@ function processMessage(topic, payload, packet)
                 mint = minp = minh = mini = 10000;
                 maxt = maxp = maxh = maxi = 0;
                 client_westa.publish(wtopicCmd, 'range ' + datestring);
+*/
                 }
             break;
         case wtopicState:
@@ -227,7 +233,9 @@ function plotTemp()
             }
         }
     };
-    const temperatureChart = new Chart(ctx, config);
+    if(temperatureChart)
+        temperatureChart.destroy();
+    temperatureChart = new Chart(ctx, config);
     }
 
 function plotPres()
@@ -294,5 +302,63 @@ function plotPres()
             }
         }
     };
-    const temperatureChart = new Chart(ctx, config);
+    if(pressureChart)
+        pressureChart.destroy();
+    pressureChart = new Chart(ctx, config);
+    }
+
+function enableTime()
+    {
+    westaGetData();
+    }
+function enableInt()
+    {
+    }
+function setTimeHistory()
+    {
+    westaGetData();
+    }
+
+function westaGetData()
+    {
+    var t = document.querySelector('input[name="history"]:checked').value;
+    if(t == 'tsel')
+        {
+        var date = new Date();
+        var sel = document.getElementById("timeScale").value;
+        switch (sel)
+            {
+            case 'h24':
+                date.setHours(date.getHours() - 24);
+                break;
+            case 'h48':
+                date.setHours(date.getHours() - 48);
+                break;
+            case 'week':
+                date.setDate(date.getDate() - 7);
+                break;
+            case 'm1':
+                date.setMonth(date.getMonth() - 1);
+                break;
+            case 'm3':
+                date.setMonth(date.getMonth() - 3);
+                break;
+            case 'y1':
+                date.setMonth(date.getMonth() - 12);
+                break;
+            default:
+                break;
+            }
+        var datestring = (date.getFullYear()) + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" +
+                      date.getDate() + "T" + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
+        console.log(datestring);
+        idx = 0;
+        mint = minp = minh = mini = 10000;
+        maxt = maxp = maxh = maxi = 0;
+        temps.length = press.length = hums.length = presns.length = itus.length = times.length = 0;
+        client_westa.publish(wtopicCmd, 'range ' + datestring);
+        }
+    else if(t == 'intsel')
+        {
+        }
     }

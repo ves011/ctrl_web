@@ -19,7 +19,7 @@
     <title>Statia Meteo</title>
 </head>
 <body onload="getWestaClient()">
-<div class="chart-container" style="position: relative; height:100px; width:90vw"></div>
+<div class="chart-container" style="position: relative; height:50px; width:90vw"></div>
     <button id = "back", class = "back" onclick="location.href='../index.html'"></button>
 </div>
 <div class="chart-container" style="position: relative; height:300px; width:90vw">
@@ -27,5 +27,44 @@
 </div>
 <div class="chart-container" style="position: relative; height:300px; width:90vw">
   <canvas id="presChart"></canvas>
+</div>
+<div style="position: relative; height:200px; width:90vw; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 12px;">
+    <table>
+        <tr>
+            <td><b>Istoric</b></td>
+        </tr>
+        <tr>
+            <td>
+                <input type="radio" id="time" name="history" value="tsel" onclick="enableTime()" checked>
+                <label for="time">durata</label>
+            </td>
+            <td style = "text-align: right;">
+                <select name="intName" id="timeScale" onchange="setTimeHistory()">
+                    <option value="h24" selected>24 h</option>
+                    <option value="h48">48 h</option>
+                    <option value="week">1 saptamana</option>
+                    <option value="m1">1 luna</option>
+                    <option value="m3">3 luni</option>
+                    <option value="y1">1 an </option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="radio" id="interval" name="history" value="intsel" onclick="enableInt()">
+                <label for="interval">interval</label>
+            </td>
+            <td>
+                <label for="from" style="vertical-align: bottom;">de la:</label>
+                <input type="date" id="from" name="from">
+            </td>
+            <td>
+                <label for="to" style="vertical-align: bottom;">pana la:</label>
+                <input type="date" id="to" name="to">
+            </td>
+            <td></td>
+        </tr>
+    </table>
+    
 </div>
 </body>
