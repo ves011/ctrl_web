@@ -7,7 +7,7 @@
         {
             "type":"chrome",
             "request":"launch",
-            "url": "http://proxy.gnet/pages/westa.html",
+            "url": "https://proxy.gnet/pages/westa.html",
             "name":"westa"
         },
         {

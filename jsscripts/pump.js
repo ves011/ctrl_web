@@ -72,7 +72,6 @@ function processMessage(topic, payload, packet)
             document.getElementById("minP").innerHTML = params[7];
             document.getElementById("maxP").innerHTML = params[8];
             document.getElementById("pkpa").innerHTML = params[5];
-            params[4] = '3428';
             document.getElementById("current").innerHTML = Number(params[4]/1000).toFixed(2);
             updateUI(params[2], params[3]);
             break;

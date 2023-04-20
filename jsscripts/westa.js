@@ -21,7 +21,8 @@ var pressureChart = null;
 function getWestaClient()
     {
 
-    const url = 'ws://proxy.gnet/ws/';
+    //const url = 'ws://proxy.gnet/ws/';
+    const url = 'wss://proxy.gnet/wss/';
     const options = 
         {
         // Clean session
@@ -219,7 +220,14 @@ function plotTemp()
                 title: {display: true, text: "deg C", font: {weight: "bold"}},
                 position: "left",
                 suggestedMax: maxt + 5 ,
-                suggestedMin: mint - 5
+                suggestedMin: mint - 5,
+                ticks:
+                    {
+                    callback: function(value, index, ticks) 
+                        {
+                        return Number(value).toFixed(2);
+                        }
+                    }
                 },
             y1:
                 {
@@ -298,6 +306,16 @@ function plotPres()
                 title: {display: true, text: "mBar", font: {weight: "bold"}},
                 suggestedMax: maxp + 5,
                 suggestedMin: minp - 5
+                },
+            y1:
+                {
+                border:{display: true, width: 3, color: '#fff'},
+                position: 'right',
+                title: {display: true, text: "  ", font: {size: 14, weight: "bold"}},
+                grid: {drawOnChartArea: false}, // only want the grid lines for one axis to show up
+                suggestedMax: maxtp + 5 ,
+                suggestedMin: mintp - 5,
+                ticks:{color: '#fff'}
                 }
             }
         }

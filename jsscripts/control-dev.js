@@ -114,6 +114,8 @@ function processMessage(topic, payload, packet)
                     strdest = 'agate.html';
                 else if(iot.shortName.indexOf("pump") >= 0)
                     strdest = 'pump.html';
+                else if(iot.shortName.indexOf("westa") >= 0)
+                    strdest = 'westa.html';
                 if(strdest != "");
                     {
                     str += strdest;                    
