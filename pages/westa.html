@@ -21,6 +21,16 @@
 <body onload="getWestaClient()">
 <div class="chart-container" style="position: relative; height:50px; width:90vw"></div>
     <button id = "back", class = "back" onclick="location.href='../index.html'"></button>
+    <div class="comdiv">
+        <table style="align-self: center; margin: 0 auto; border-spacing: 5px;">
+            <tr>
+            <td id = "ctime" style = "color: black; font-weight: bold;"></td>
+            <td id = "ctemp" style = "background-color: #f379e9; color: black; font-weight: bold; border-right: 1px solid black; border-bottom: 1px solid black;"></td>
+            <td id = "chum" style = "background-color: #92f88e; color: black; font-weight: bold; border-right: 1px solid black; border-bottom: 1px solid black;"></td>
+            <td id = "cpres" style = "background-color: #dd8800; color: black; font-weight: bold; border-right: 1px solid black; border-bottom: 1px solid black;"></td>
+            </tr>
+        </table>
+    </div>
 </div>
 <div class="chart-container" style="position: relative; height:300px; width:90vw">
   <canvas id="tempChart"></canvas>
@@ -40,6 +50,7 @@
             </td>
             <td style = "text-align: right;">
                 <select name="intName" id="timeScale" onchange="setTimeHistory()">
+                    <option value="h12">12 h</option>
                     <option value="h24" selected>24 h</option>
                     <option value="h48">48 h</option>
                     <option value="week">1 saptamana</option>

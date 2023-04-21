@@ -15,13 +15,13 @@ const hums = [];
 const times = [];
 const itus = [];
 var idx = 0;
+var requestdata = 0;
 var mint, maxt, minp, maxp, minh, maxh, mini, maxi, maxtp, mintp;
 var temperatureChart = null;
 var pressureChart = null;
 function getWestaClient()
     {
-
-    //const url = 'ws://proxy.gnet/ws/';
+    //const url = 'ws://proxy.gnet/ws/'; 
     const url = 'wss://proxy.gnet/wss/';
     const options = 
         {
@@ -50,12 +50,9 @@ function getWestaClient()
     }
 function processMessage(topic, payload, packet)
     {
-    
     b = String.fromCharCode(...payload);
     console.log('Message from server ', topic + ': ' + b);
     params = b.split('\1');
-    //params[0] = pdevName
-    //params[1] = BMP|DHT|BMPDHT|WR measurements data stored in tph file on device
     switch(topic)
         {
         case 'gnetdev/response':
@@ -74,23 +71,12 @@ function processMessage(topic, payload, packet)
                 client_westa.subscribe(wtopicState);
                 client_westa.subscribe(wtopicMonitor);
                 westaGetData();
-/*
-                var date = new Date();
-                date.setHours(date.getHours() - 24);
-                datestring = (date.getFullYear()) + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" +
-                                    date.getDate() + "T" + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
-                console.log(datestring);
-                idx = 0;
-                mint = minp = minh = mini = 10000;
-                maxt = maxp = maxh = maxi = 0;
-                client_westa.publish(wtopicCmd, 'range ' + datestring);
-*/
                 }
             break;
         case wtopicState:
             if(params[2].indexOf("WR ") == 0)
                 {
-                //get all the linse starting with "WR "
+                //get all the lines starting with "WR "
                 fileData[idx] = params[2];
                 data = params[2].split(' ');
                 epd = new Date(data[1]);
@@ -100,11 +86,6 @@ function processMessage(topic, payload, packet)
                 press[idx] = data[3];
                 presns[idx] = data[4];
                 hums[idx] = data[5];
-//ITU = (T * 1,8 + 32) - (0,55 - 0,0055 * H)[(T * 1,8 + 32) - 58]
-//                itus[idx] = (Number(temps[idx]) * 1.8 + 32) - 
-//                    (0.55 -0.0055 * Number(hums[idx])) * ((Number(temps[idx]) * 1.8 + 32) - 58);
-
-//ITU = 0,81 x T + 0,01 x U x (0,99 x T – 14,3) + 46,3
                 itus[idx] = 0.81 * Number(temps[idx]) + 0.01 * Number(hums[idx]) * (0.99 * Number(temps[idx]) - 14.3) + 46.3;
                 if(Number(temps[idx]) > maxt)
                     maxt = Number(temps[idx]);
@@ -137,12 +118,59 @@ function processMessage(topic, payload, packet)
                     else if(Number(presns[0]) < minp)
                         minp = Number(presns[0]);
                     //draw the plot
-                    plotTemp()
-                    plotPres()
+                    const date = new Date(times[idx - 1]);
+                    const formattedDate = date.toLocaleString("en-GB", 
+                        {
+                        day: "numeric",
+                        month: "short",
+//                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit"
+                        });
+                    document.getElementById("ctime").innerHTML = formattedDate + ':';
+                    document.getElementById("ctemp").innerHTML = Number(temps[idx - 1]).toFixed(1) + ' °C ';
+                    document.getElementById("cpres").innerHTML = Number(press[idx - 1]).toFixed(1) + ' mBar ';
+                    document.getElementById("chum").innerHTML = Number(hums[idx - 1]).toFixed(1) + ' % ';
+                    if(requestdata == 1)
+                        {
+                        plotTemp();
+                        plotPres();
+                        requestdata = 0;
+                        }
                     }
                 }
+/*
+            else if(params[2].indexOf("BMP") == 0)
+                {
+                epd = new Date(params[0]);
+                const formattedDate = epd.toLocaleString("en-GB", 
+                    {
+                    day: "numeric",
+                    month: "short",
+                    hour: "numeric",
+                    minute: "2-digit"
+                    });
+                document.getElementById("ctime").innerHTML = formattedDate + ':';
+                document.getElementById("ctemp").innerHTML = Number(params[3]).toFixed(1) + ' °C ';
+                document.getElementById("cpres").innerHTML = Number(params[4]).toFixed(1) + ' mBar ';
+                } */
             break;
         case wtopicMonitor:
+            if(params[2].indexOf("BMPDHT") == 0)
+                {
+                epd = new Date(params[0]);
+                const formattedDate = epd.toLocaleString("en-GB", 
+                    {
+                    day: "numeric",
+                    month: "short",
+                    hour: "numeric",
+                    minute: "2-digit"
+                    });
+                document.getElementById("ctime").innerHTML = formattedDate + ':';
+                document.getElementById("ctemp").innerHTML = Number(params[3]).toFixed(1) + ' °C ';
+                document.getElementById("cpres").innerHTML = Number(params[4]).toFixed(1) + ' mBar ';
+                document.getElementById("chum").innerHTML = Number(params[6]).toFixed(1) + ' % ';
+                }
             break;
         default:
             break;
@@ -177,7 +205,7 @@ function plotTemp()
             },
             {
             data: hums, // Set initially to empty data
-            label: "Umiditte",
+            label: "Umiditate",
             borderColor: "#92f88e",
             fill: false,
             lineTension: 0.4,  
@@ -346,6 +374,9 @@ function westaGetData()
         var sel = document.getElementById("timeScale").value;
         switch (sel)
             {
+            case 'h12':
+                date.setHours(date.getHours() - 12);
+                break;
             case 'h24':
                 date.setHours(date.getHours() - 24);
                 break;
@@ -375,6 +406,7 @@ function westaGetData()
         maxt = maxp = maxh = maxi = 0;
         temps.length = press.length = hums.length = presns.length = itus.length = times.length = 0;
         client_westa.publish(wtopicCmd, 'range ' + datestring);
+        requestdata = 1;
         }
     else if(t == 'intsel')
         {
