@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../res/site.css">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script type="text/javascript" src="../jsscripts/water.js"></script>
+    <title>Controler Irigatie</title>
+</head>
+<body onload="getWateringClient()" onbeforeunload="clean_connection()"> 
+    <button id = "back", class = "back" onclick="location.href='../index.html'"></button>
+    <div id = "comstatus" class = "comdiv"></div>
+    <div class = "hdiv" style = "height: 800px;">
+        Controler Irigatie
+        <div class="status_prog" style = "height: 150px;">
+            Program de irigatie
+            <table style="width: 285px; padding: 1px; font-size: 15px; text-align: center; line-height: 15px;">
+                <tr style="font-size: 10px; font-weight: bold">
+                    <td style="width: 35px;"></td>
+                    <td style="width: 100px;">Start</td>
+                    <td style="width: 100px;">Stop</td>
+                    <td style="width: 35px;">Stare</td>
+                    <td style="width: 35px;"></td>
+                </tr>
+                <tr style="height: 35px;">
+                    <td style="width: 35px; font-size: 20px; color: #6659df;">EV0</td>
+                    <td style="width: 100px;">
+                        <input type="time" id="dv0_start" onchange="TimeUpdate('dv0_start')" style="border: none; font-size: 20px;">
+                    </td>
+                    <td style="width: 100px;">
+                        <input type="time" id="dv0_stop"  onchange="TimeUpdate('dv0_stop')" style="border: none; font-size: 20px;">
+                    </td>
+                    <td style="width: 35px;">
+                        <button id = "reset_p0" class="bsave button_enabled" style="font-size: 10px; font-weight: bold;">NOK-1</button>
+                    </td>
+                    <td style="width: 35px;">
+                        <button id = "save_p0" class="bsave button_disabled">&#x2713;</button>
+                    </td>
+                </tr>
+                <tr style="height: 35px;">
+                    <td style="width: 35px; font-size: 20px; color: #6659df;"">EV1</td>
+                    <td style="width: 100px;">
+                        <input type="time" id="dv1_start"  onchange="TimeUpdate('dv1_start')" style="border: none; font-size: 20px;">
+                    </td>
+                    <td style="width: 100px;">
+                        <input type="time" id="dv1_stop"  onchange="TimeUpdate('dv1_stop')" style="border: none; font-size: 20px;">
+                    </td>
+                    <td style="width: 35px;">
+                        <button id = "reset_p1" class="bsave button_enabled"  style="font-size: 10px; font-weight: bold;">OK0</button>
+                    </td>
+                    <td style="width: 35px;">
+                        <button id = "save_p1" class="bsave button_disabled">&#x2713;</button>
+                    </td>
+                </tr>
+            </table>
+        <hr>
+        </div>
+        <div class = "status_dv" style="height: 200px;">
+            Stare Electrovalve
+            <table style="width: 285px; padding: 1px;line-height: 10px;">
+                <tr style="height: 5px;">
+                    <td style="width:235px;"></td>
+                    <td style="width:35px; font-size: 10px; font-weight: bold;">ON/OFF</td>
+                </tr>
+                <tr style="height: 60px;">
+                    <td style="width:235px;">
+                        <button id = "bdv0" onclick = "ChangeDVStatus('DV0')" class="button_dv button_disabled">
+                            EV0&#8594ON
+                        </button>
+                    </td>
+                    <td style="width:35px;">
+                        <button id = "leddv0" class = "led_dv led_off"></button>
+                    </td>
+                </tr>
+                <tr style="height: 60px;">
+                    <td style="width:235px;">
+                        <button id = "bdv1" onclick = "ChangeDVStatus('DV1')" class="button_dv button_disabled">
+                            EV1 &#8594 ON
+                        </button>
+                    </td>
+                    <td style="width:35px;">
+                        <button id = "leddv1" class = "led_dv led_off"></button>
+                    </td>
+                </tr>
+            </table>
+            <hr>
+        </div>
+        <div class = "status_pump" style="height: 120px;">
+            Stare pompa
+            <table style="width: 285px; padding: 1px; line-height: 10px;">
+                <tr>
+                    <td style="width:235px; font-size: 10px; font-weight: bold; text-align: center;">Presiune (kPa)</td>
+                    <td style="width:35px; font-size: 10px; font-weight: bold; text-align: center;">Online<br>ON/OFF</td>
+                </tr>
+                <tr>
+                    <td id = "ppres", class = "val_col" style = "width:235px; text-align: center;">215</td>
+                    <td>
+                        <button id = "ledpump" class = "led_dv led_off"></button>
+                    </td>
+                </tr>
+            </table>
+            <hr>
+        </div>
+        <div class = "historyh">
+            Istoric
+            <table style="font-size: 15px; text-align: center; line-height: 15px;">
+                <tr style="background-color: blueviolet; color: white;">
+                    <th style="width: 250px;">Data</th>
+                    <th style="width: 40px;">EV#</th>
+                    <th style="width: 45px;">Stat</th>
+                    <th style="width: 40px;">Err</th>
+                </tr>
+            </table>
+        </div>
+        <div class = "history">
+            <table id = "thist" style="line-height: 15px; position: sticky; top: 0;">
+                
+            </table>
+            <hr>
+        </div>
+    </div>
+</body>
+</html>

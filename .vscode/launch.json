@@ -7,6 +7,12 @@
         {
             "type":"chrome",
             "request":"launch",
+            "url": "https://proxy.gnet/pages/water.html",
+            "name":"water"
+        },
+        {
+            "type":"chrome",
+            "request":"launch",
             "url": "https://proxy.gnet/pages/westa.html",
             "name":"westa"
         },

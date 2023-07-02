@@ -81,7 +81,7 @@ const iotList = [];
         {
         client.subscribe('gnetdev/response');
         client.subscribe('$SYS/broker/clients/connected');
-        client.publish('gnetdev/query', 'reqID');
+        client.publish('gnetdev/query', 'reqID', { qos: 1, retain: false });
         c_connected = true;
         });
     client.on('reconnect', function (data) {console.log('Reconnecting...')});
@@ -116,6 +116,8 @@ function processMessage(topic, payload, packet)
                     strdest = 'pump.html';
                 else if(iot.shortName.indexOf("westa") >= 0)
                     strdest = 'westa.html';
+                else if(iot.shortName.indexOf("water") >= 0)
+                    strdest = 'water.html';
                 if(strdest != "");
                     {
                     str += strdest;                    
@@ -139,6 +141,7 @@ function processMessage(topic, payload, packet)
             break;
         }
     }
+/*
  function deviceGetInfo(idx)
     {
     var data = "action=info&param=" + devID[idx];
@@ -206,3 +209,4 @@ function getPumpParams()
     //selectedDevIP = urlParams.get('ip');
     setPumpParams(selectedDevIP);
     }
+    */

@@ -4,7 +4,7 @@
         left: 0px;
         top: 50px;
         width: 375px;
-        height: 300px;
+        height: 1000px;
         line-height: 40px;
         vertical-align: center;
         text-align: center;
@@ -111,6 +111,7 @@
     .led_on 	{color: #28e056; background-color: #28e056;}
 	.led_off 	{color: #d6d4d4; background-color: #d6d4d4;}
     .led_fault  {color: #e00202; background-color: #e00202;}
+    .led_online {color: yellow; background-color: yellow;}
 	.led_pos	{top: 50px; left: 210px;}
     .ledr_pos   {top: 50px; left: 260px;}
     .ledf_pos   {top: 50px; left: 310px;}
@@ -139,6 +140,69 @@
         line-height: 40px;
         font-size: 20px;
         }
+    .status_prog /* status program de irigatie */
+        {
+        position: absolute;
+        left: 10px;
+        top: 50px;
+        height: 140px;
+        width: 400px; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 20px;
+        text-align: left;
+        line-height: 40px;
+        font-size: 20px;
+        }
+    .status_dv /* status div */
+        {
+        position: absolute;
+        left: 10px;
+        top: 200px;
+        height: 160px;
+        width: 400px; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 20px;
+        text-align: left;
+        font-size: 20px;
+        }
+    .status_pump
+        {
+        position: absolute;
+        left: 10px;
+        top: 400px;
+        height: 180px;
+        width: 410px; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 20px;
+        text-align: left;
+        font-size: 20px;
+        }
+    .historyh
+        {
+        position: absolute;
+        left: 10px;
+        top: 520px;
+        height: 60px;
+        width: 400px; 
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 20px;
+        text-align: left;
+        font-size: 20px;
+        }
+    .history
+        {
+        position: absolute;
+        left: 10px;
+        top: 580px;
+        height: 250px;
+        width: 400px; 
+        overflow-y: scroll;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 20px;
+        text-align: left;
+        font-size: 20px;
+        }
+    
 	.params /* params table div */
         {
         position: absolute;
@@ -179,23 +243,6 @@
 		opacity: 1;
 		}
 	.brefresh:active {box-shadow: 0 0;}
-    .binfo
-		{
-		display: inline-block;
-		width: 30px;
-    	height: 28px;
-    	padding: 0px;
-    	margin: 2px;
-    	vertical-align: center;
-		cursor: pointer;
-		border: none;
-		transition-duration: 0.4s;
-		background-image: url("info.jpg");
-		background-size: 30px 28px;	
-		background-repeat: no-repeat;
-		opacity: 1;
-		}
-	.binfo:hover {opacity: 0.5;}
 	.bsettings
 		{
         position: absolute;
@@ -237,6 +284,59 @@
         box-shadow: 9px 9px #999;
 		background-color: #d6d4d4;
         }
+    .led_dv
+		{
+		height: 50;
+		width: 50;
+		border: all;
+		border-radius: 50%;
+		padding: 15px 15px;
+		cursor: none;
+		pointer-events: none;
+		/*color: rgb(40, 224, 86);
+        background-color: rgb(40, 224, 86);*/
+		}
+    .button_dv
+        {
+        left: 0px;
+        font-size: 20px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bold;
+        width: 190px;
+        height: 40px;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 9px 9px #999;
+		background-color: #d6d4d4;
+        }
+    .button_dv:active {background-color: #869dbe;	cursor: pointer;	box-shadow: 0 5px #666;	transform: translateY(4px);	box-shadow: 0;}
+    .bsave
+        {
+        height: 30px;
+        width: 50px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bold;
+        font-size: 20px;
+        padding: 5px 5px;
+        cursor: none;
+        pointer-events: none;
+        outline: none;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 5px 5px #999;
+        }
+    .bsave:active {background-color: #869dbe;	cursor: pointer;	box-shadow: 0 5px #666;	transform: translateY(4px);	box-shadow: 0;}
+    .button_dv:active 
+        {
+        background-color: #869dbe;
+        box-shadow: 0 5px #666;
+        transform: translateY(4px);
+        cursor: pointer;
+        box-shadow: 0;
+        }
 	.button:active 
         {
         background-color: #869dbe;
@@ -259,7 +359,7 @@
         cursor: none;
         pointer-events: none;
         }
-	.button:active 		{					background-color: #869dbe;	cursor: pointer;	box-shadow: 0 5px #666;	transform: translateY(4px);	box-shadow: 0;}
+	.button:active 		{background-color: #869dbe;	cursor: pointer;	box-shadow: 0 5px #666;	transform: translateY(4px);	box-shadow: 0;}
     .button_enabled     {color: #6659df;	/*background-color: #d6d4d4;*/	cursor: pointer;	pointer-events: all;}
     .button_disabled	{color: #bdbabf;    /*background-color: #d6d4d4;*/  cursor: none;       pointer-events: none;}
     .button_online      {color: #0ab635;    /*background-color: #d6d4d4;*/  cursor: pointer;    pointer-events: all;}
@@ -270,4 +370,21 @@
     .button-posi 		{top: 300px;	left: 10px}
 	.button-posopen 	{top: 120px;	left: 90px;}
     .button-posclose 	{top: 200px;	left: 90px;}
+
+    #thist /*table history */
+        {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 12px;
+        text-align: left;
+        font-weight: normal;
+        }
+    #thist th
+        {
+        text-align: left;
+        background-color: #636370;
+        color: white;
+        }
+    #thist tr:nth-child(even){background-color: #d4d7f5;}
+    #thist tr:hover {background-color: #d2bdf3;}
+
 	
