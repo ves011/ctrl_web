@@ -47,13 +47,13 @@ function processMessage(topic, payload, packet)
     {
     b = String.fromCharCode(...payload);
     console.log('Message from server ', topic + ': ' + b);
-    params = b.split('\1');
+    params = b.split('\x01');
     switch(topic)
         {
         case 'gnetdev/response':
             if(pdevName == '')
                 {
-                if(params[0].indexOf("pump") >= 0)
+                if(params[0].indexOf("wp") >= 0)
                     pdevName = params[1];
                 }
             if(params[1] == pdevName)

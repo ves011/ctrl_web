@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script type="text/javascript" src="../jsscripts/wpp.js"></script>
+    <script type="text/javascript" src="../jsscripts/showzone.js"></script>
+    <link rel="stylesheet" href="../res/site.css">
+<style>
+    thv, tdv {border-bottom: 1px solid #ddd; text-align: center;}
+    .left_col {width: 150px; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; text-align: left;}
+    .val_col {width: 60px; border-right: 1px solid #ddd; text-align: center; border-bottom: 1px solid #ddd;}
+
+.myDiv2
+    {
+    position: fixed;
+    /*border:5px outset blue;*/
+    left: 10px;
+    /*top: 110px;*/
+    text-align: left;
+    font-weight: bold;
+    font-size: 20px;
+    line-height:40px;
+    }
+.myDiv3
+    {
+    position: relative;
+    display: block;
+    /*border:5px outset blue;*/
+    left: 10px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 16px;
+    line-height:70px;
+    color: blue;
+    }
+.myDiv4
+    {
+    position: relative;
+    display: block;
+    /*border:1px outset rgb(245, 82, 6);*/
+    left: 10px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 18px;
+    line-height:20px;
+    /*height: 400px;
+    overflow-y:auto;*/
+    }
+.thistDiv
+    {
+    position: relative;
+    display: block;
+    /*border:1px outset blue;*/
+    font-weight: bold;
+    font-size: 12px;
+    line-height:20px;
+    height: 250px;
+    width: 445px;
+    overflow-y:auto;
+    }
+</style>
+
+</head>
+<body onload="zoneInit()" onbeforeunload="b4unload()">
+    <button id = "back" class = "back" onclick="location.href='./wp.html'" ></button>
+    <div class="hdiv" id = "hdiv">
+        Program:
+        <hr>
+
+        <div class="myDiv3">
+        	Robinet
+            <button id = "btap" onclick = "" class = "button button-postap button_disabled">
+            	Set...
+            </button>
+        </div>
+            <div class = "myDiv4" style = "height: 150px;">
+                Program:
+                <table>
+                    <tr style="height: 10px; font-size: 10px; font-weight: bold; text-align: center;">
+                        <td style="width: 60px;"></td>
+                        <td style="width: 100px;">Start</td>
+                        <td style="width: 100px;">Stop</td>
+                        <td style="width: 60px;">Stare</td>
+                        <td style="width: 60px;">Salvare</td>
+                    </tr>
+                    <tr style="height: 35px;">
+                        <td style="width: 60px; font-size: 14px; color: #6659df;">Prog 1</td>
+                        <td style="width: 100px;">
+                            <input type="time" id="dv_start0" onblur="timeEdit('start', 0)" style="border: none; font-size: 20px;">
+                        </td>
+                        <td style="width: 100px;">
+                            <input type="time" id="dv_stop0"  onblur="timeEdit('stop', 0)" style="border: none; font-size: 20px;">
+                        </td>
+                        <td style="width: 60px;">
+                            <button id = "reset_p0" class="bsave button_enabled" style="font-size: 10px; font-weight: bold;" onclick="resetProg(0)">NOK-1</button>
+                        </td>
+                        <td rowspan = "2" style="width: 60px;">
+                            <button id = "save_p0" class="bsave button_disabled" style="font-size: 16px; font-weight: bold;" onclick="saveProg()">&#x2713;</button>
+                        </td>
+                    </tr>
+                    <tr style="height: 35px;">
+                        <td style="font-size: 14px; color: #6659df;">Prog 2</td>
+                        <td><input type="time" id="dv_start1" onblur="timeEdit('start', 1)" style="border: none; font-size: 20px;"></td>
+                        <td><input type="time" id="dv_stop1" onblur="timeEdit('stop', 1)" style="border: none; font-size: 20px;"></td>
+                        <td>
+                            <button id = "reset_p1" class="bsave button_enabled" style="font-size: 10px; font-weight: bold;" onclick="resetProg(1)">NOK-1</button>
+                        </td>
+                        <!--<td>
+                            <button id = "save_p1" class="bsave button_disabled" style="font-size: 16px; font-weight: bold;" onclick="SaveProg(1)">&#x2713;</button>
+                        </td>-->
+                    </tr>
+                </table>
+                <hr>
+            </div>
+            <div class = "myDiv4">
+                <h>Istoric:</h><h style = "font-size: 8px;" id = "hstate">(incomplet)</h>
+                <div class = "thistDiv" style = "height: auto;">
+                    <table style = "font-size: 12px; font-weight: bold; text-align: center;">
+                        <tr>
+                            <th style = "width: 20px; background-color: #d2bdf3;"></th>
+                            <th style = "width: 140px;background-color: #d2bdf3;">Start</th>
+                            <th style = "width: 140px;background-color: #d2bdf3;">Stop</th>
+                            <th style = "width: 50px;background-color: #d2bdf3;">Q apa (l)</th>
+                            <th style = "width: 55px;background-color: #d2bdf3;">Stare</th>
+                        </tr>
+                    </table>
+                </div>
+                <div class = "thistDiv">
+                    <table style = "font-size: 12px; font-weight: bold; text-align: center;" id = "thist"></table>
+                </div>
+            </div>
+
+    </div>
+    <script type="text/javascript">
+    window.onbeforeunload = function() 
+        {
+        if(t_edit == 1 || s_edit == 1)
+            return 1;
+        return null;
+        }
+</script>
+</body>
+</html>

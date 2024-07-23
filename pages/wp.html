@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../res/site.css">
+<style>
+	thv, tdv {border-bottom: 1px solid #ddd; text-align: center;}
+    .left_col {width: 150px; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd; text-align: left;}
+    .val_col {width: 60px; border-right: 1px solid #ddd; text-align: center; border-bottom: 1px solid #ddd;}
+	.irig_b /* irrigation buttons */
+        {
+        position: absolute;
+        top: 400px;
+        left: 0px;
+		height: 300px;
+		width: 400px;
+        /*font-size: 16px;*/
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bold;
+        /*text-align: left;*/
+		text-align: center;
+        /*font-size: 30px;*/
+        color: #586a72;
+        line-height: 15px;
+        }
+ 	.button_z
+        {
+        position: absolute;
+        left: 0px;
+        padding: 15px 25px;
+        font-size: 16px;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-weight: bold;
+        width: 120px;
+        height: auto;
+        text-align: center;
+        cursor: pointer;
+        outline: none;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 9px 9px #999;
+		background-color: #d6d4d4;
+        }
+</style>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script type="text/javascript" src="../jsscripts/wpp.js"></script>
+    <script type="text/javascript" src="../jsscripts/showzone.js"></script>
+    <title>Pompa Foraj</title>
+</head>
+<body onload="getPumpClient()" onbeforeunload="clean_connection()"> 
+    <button id = "back" class = "back" onclick="location.href='../index.html'"></button>
+    <div id = "comerror" class = "comdiv"></div>
+    <!--<bsettings id = "settings" class = "bsettings" onclick="gotoSettings()"></bsettings> -->
+    <div id = "comstatus" class = "comdiv"></div>
+    <div class = "hdiv">
+        Pompa Foraj
+        <hr>
+        <div class = "status">
+            <table class = "status_header" style="width: 370px; padding: 1px;">
+                <tr>
+                    <td style="width:180px;">stare</td>
+                    <td style="width:10px;"></td>
+                    <td style="width:55px;">online</td>
+                    <td style="width:35px;">ON<br>OFF</td>
+                    <td><b>ERR</b></td>
+                </tr>
+            </table>
+			<button id = "bstatus" onclick = "changePumpStatus()" class = "button button-poss button_disabled button_uknown">
+				Set ...
+			</button>
+			<button id = "ledstatus" class = "button_led led_pos led_off"></button>
+            <button id = "ledrunning" class = "button_led ledr_pos led_off"></button>
+            <button id = "ledfault" class = "button_led ledf_pos led_off"></button>
+        </div>
+        <div class = "params">
+            <table>
+                <tr>
+                    <th class="left_col"></th>
+                    <th class="val_col">Min</th>
+                    <th class="val_col" style="width:100px;">Actual</th>
+                    <th class="val_col">Max</th>
+                </tr>
+                <tr>
+                    <td class="left_col">Presiune (kPa)</td>
+                    <td id = "minP" class="val_col"></td>
+                    <td id = "pkpa" class="val_col"></td>
+                    <td id = "maxP" class="val_col"></td>
+                </tr>
+                <tr>
+                    <td class="left_col">Curent (A)</td>
+                    <td class="val_col"></td>
+                    <td id = "current" class="val_col"></td>
+                    <td class="val_col"></td>
+                </tr>
+                <tr>
+                    <td class="left_col">Debit (l/min)</td>
+                    <td class="val_col"></td>
+                    <td id = "qmeter" class="val_col"></td>
+                    <td class="val_col"></td>
+                </tr>
+                <tr>
+                    <td class="left_col">Total apa (mc)</td>
+                    <td class="val_col"></td>
+                    <td id = "total_water" class="val_col"></td>
+                    <td class="val_col"></td>
+                </tr>
+            </table>
+        </div>
+		<div class = "irig_b">
+            Irigatie
+            <hr>
+            <table style = "font-size: 12px;">
+            	<tr style = "color: #0000ff; font-size: 10px;">
+            		<th></th>
+            		
+       				<th>Stare robinet</th>
+       				<th></th>
+            		<th>Start</th>
+            		<th>Stop</th>
+            		<th>Cant. Apa(l)</th>
+            		<th>Stare</th>
+            	</tr>
+                <tr>
+					<td rowspan = "2" style = "font-size: 16px; width: 80px; ">
+						<a href = "./i_zone.html?dzone=0">Zona 1</a>
+					</td>
+					<td id = "state0" rowspan = "2" style = "width: 70px;"></td>
+					<td style = "width: 30px;">p1</td>
+					<td id = "start00" style = "width: 70px;"></td>
+					<td id = "stop00" style = "width: 70px;"></td>
+					<td id = "qwater00" style = "width: 70px;"></td>
+					<td id = "pstate00" style = "width: 40px;"></td>
+                </tr>
+                <tr>
+					<td>p2</td>
+					<td id = "start01"></td>
+					<td id = "stop01"></td>
+					<td  id = "qwater01"></td>
+					<td id = "pstate01"></td>
+                </tr>
+                <tr><td></td></tr>
+                <tr>
+					<td rowspan = "2"  style = "font-size: 16px;">
+						<a href = "./i_zone.html?dzone=1">Zona 2</a>
+					</td>
+					<td id = "state1" rowspan = "2"></td>
+					<td>p1</td>
+					<td id = "start10"></td>
+					<td id = "stop10"></td>
+					<td id = "qwater10"></td>
+					<td id = "pstate10"></td>
+                </tr>
+                <tr>
+
+					<td>p2</td>
+					<td id = "start11"></td>
+					<td id = "stop11"></td>
+					<td id = "qwater11"></td>
+					<td id = "pstate11"></td>
+                </tr>
+                <tr><td></td></tr>
+                <tr>
+					<td rowspan = "2"  style = "font-size: 16px;">
+						<a href = "./i_zone.html?dzone=2">Zona 3</a>
+					</td>
+					<td id = "state2" rowspan = "2""></td>
+					<td>p1</td>
+					<td id = "start20"></td>
+					<td id = "stop20"></td>
+					<td id = "qwater20"></td>
+					<td id = "pstate20"></td>
+                </tr>
+                <tr>
+
+					<td>p2</td>
+					<td id = "start21"></td>
+					<td id = "stop21"></td>
+					<td id = "qwater21"></td>
+					<td id = "pstate21"></td>
+                </tr>
+                <tr><td></td></tr>
+                <tr>
+					<td rowspan = "2" style = "font-size: 16px;">
+						<a href = "./i_zone.html?dzone=3">Zona 4</a>
+					</td>
+					<td id = "state3" rowspan = "2" style = "width: 70px;"></td>
+					<td>p1</td>
+					<td id = "start30"></td>
+					<td id = "stop30"></td>
+					<td id = "qwater30"></td>
+					<td id = "pstate30"></td>
+                </tr>
+                <tr>
+
+					<td>p2</td>
+					<td id = "start31"></td>
+					<td id = "stop31"></td>
+					<td id = "qwater31"></td>
+					<td id = "pstate31"></td>
+                </tr>
+            </table>
+
+		</div>
+    </div>
+
+</body>
+</html>

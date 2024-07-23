@@ -7,6 +7,12 @@
         {
             "type":"chrome",
             "request":"launch",
+            "url": "https://proxy.gnet:442",
+            "name": "index"
+        }
+        {
+            "type":"chrome",
+            "request":"launch",
             "url": "https://proxy.gnet/pages/water.html",
             "name":"water"
         },
@@ -21,7 +27,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "ctrl-web",
-            "url": "https://proxy.gnet"
+            "url": "https://proxy.gnet:443"
         },
         {
             "type": "chrome",

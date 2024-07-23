@@ -9,7 +9,7 @@ var w_connected = false;
 var client_watering;
 var wstatus = 0,    dv0_state = 0, dv0_starth = 0, dv0_startm = 0, dv0_stoph = 0, dv0_stopm = 0, dv0_cs = 0, dv0_fault = 0;
 var                 dv1_state = 0, dv1_starth = 0, dv1_startm = 0, dv1_stoph = 0, dv1_stopm = 0, dv1_cs = 0, dv1_fault = 0;
-var p_status, p_running, p_pressure;
+var p_status, p_state, p_pressure;
 var hrow;
 const phv = [];
 
@@ -47,7 +47,7 @@ function processMessage(topic, payload, packet)
     {
     b = String.fromCharCode(...payload);
     console.log('Message from server ', topic + ': ' + b);
-    params = b.split('\1');
+    params = b.split('\x01');
     switch(topic)
         {
         case 'gnetdev/response':
@@ -65,7 +65,7 @@ function processMessage(topic, payload, packet)
                 client_watering.subscribe(wtopicState);
                 client_watering.subscribe(wtopicMonitor);
                 client_watering.publish(wtopicCmd, 'state');
-                client_watering.publish(wtopicCmd, 'readps');
+                document.getElementById("mask_div").style.display = "block";
                 }
             break;
         case wtopicState:
@@ -75,6 +75,13 @@ function processMessage(topic, payload, packet)
                 UpadteHistory(params);
             break;
         case wtopicMonitor:
+            if(params[2] == "pstate")
+                {
+                p_status = params[3];
+                p_state = params[4];
+                p_pressure = params[5];
+                UpdatePumpState();
+                }
             break;
         default:
             break;
@@ -90,6 +97,7 @@ function UpdateProgramState()
         document.getElementById("reset_p0").innerHTML = "OK" + dv0_cs;
     else
         document.getElementById("reset_p0").innerHTML = "NOK" + dv0_cs;
+    document.getElementById("save_p0").className = "bsave button_disabled";
     tm = FormatTime(dv1_starth, dv1_startm)
     document.getElementById("dv1_start").value = tm;//dv0_starth + ":" + dv0_startm;
     tm = FormatTime(dv1_stoph, dv1_stopm)
@@ -98,6 +106,7 @@ function UpdateProgramState()
         document.getElementById("reset_p1").innerHTML = "OK" + dv1_cs;
     else
         document.getElementById("reset_p1").innerHTML = "NOK" + dv1_cs;
+    document.getElementById("save_p1").className = "bsave button_disabled";
     }
 function UpdateDVState()
     {
@@ -131,14 +140,14 @@ function UpdatePumpState()
     document.getElementById("ppres").innerHTML = p_pressure;
     if(p_status == 2) //online
         {
-        if(p_running == 1) //running
+        if(p_state == 1) //running
             document.getElementById("ledpump").className = "led_dv led_on";
         else // not running
             document.getElementById("ledpump").className = "led_dv led_online";
         }
     else if(p_status == 3) //offline
         {
-        if(p_running == 1) //running
+        if(p_state == 1) //running
             document.getElementById("ledpump").className = "led_dv led_on";
         else // not running
             document.getElementById("ledpump").className = "led_dv led_off";
@@ -207,13 +216,14 @@ function ChangeDVStatus(target)
             client_watering.publish(wtopicCmd, 'close 1');
         }
     client_watering.publish(wtopicCmd, 'state');
+    document.getElementById("mask_div").style.display = "block";
     }
 function UpadteHistory(params)
     {
     to = document.getElementById("thist");
     if(params[3] == "start")
         {
-        while((nrows = to.rows.length) > 1)
+        while((nrows = to.rows.length) > 0)
             to.deleteRow(-1);
         hrow = 0;
         }
@@ -263,8 +273,8 @@ function ProcessState(params)
         }
     else
         {
-        dv1_state = params[6];
-        dv0_state = params[8];
+        dv0_state = params[6];
+        dv1_state = params[8];
         }
     if(params[9] == 0)
         {
@@ -282,9 +292,36 @@ function ProcessState(params)
         dv1_starth = 0; dv1_startm = 0; dv1_stoph = 0; dv1_stopm = 0; dv1_cs = 0; dv1_fault = 0;
         }
     p_status = params[23];
-    p_running = params[24];
+    p_state = params[24];
     p_pressure = params[25];
     UpdateProgramState();
     UpdateDVState();
     UpdatePumpState();
+    client_watering.publish(wtopicCmd, 'readps');
+    document.getElementById("mask_div").style.display = "none";
+    }
+function SaveProg(target)
+    {
+    var vstart, vstop;
+    var str2publish = "program "
+    if(target == "p0")
+        {
+        str2publish += "0 ";
+        vstart = document.getElementById("dv0_start").value;
+        vstop = document.getElementById("dv0_stop").value;
+        str2publish = str2publish + vstart + " " + vstop;
+        }
+    else if(target == "p1")
+        {
+        str2publish += "1 ";
+        vstart = document.getElementById("dv1_start").value;
+        vstop = document.getElementById("dv1_stop").value;
+        str2publish = str2publish + vstart + " " + vstop;
+        }
+    client_watering.publish(wtopicCmd, str2publish);
+    client_watering.publish(wtopicCmd, "state");
+    document.getElementById("mask_div").style.display = "block";
+    }
+function ResetProg(target)
+    {
     }

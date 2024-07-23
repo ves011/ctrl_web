@@ -8,11 +8,16 @@
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <script type="text/javascript" src="../jsscripts/water.js"></script>
     <title>Controler Irigatie</title>
+<style>
+    .mask {display: none; cursor: progress; z-index: 999; position: absolute; top: 0; left: 0; height: 100%; width: 100%; background-color: #2b2929; opacity: 0.1; }
+</style>
 </head>
 <body onload="getWateringClient()" onbeforeunload="clean_connection()"> 
     <button id = "back", class = "back" onclick="location.href='../index.html'"></button>
     <div id = "comstatus" class = "comdiv"></div>
-    <div class = "hdiv" style = "height: 800px;">
+
+    <div class = "hdiv">
+    
         Controler Irigatie
         <div class="status_prog" style = "height: 150px;">
             Program de irigatie
@@ -33,10 +38,10 @@
                         <input type="time" id="dv0_stop"  onchange="TimeUpdate('dv0_stop')" style="border: none; font-size: 20px;">
                     </td>
                     <td style="width: 35px;">
-                        <button id = "reset_p0" class="bsave button_enabled" style="font-size: 10px; font-weight: bold;">NOK-1</button>
+                        <button id = "reset_p0" class="bsave button_enabled" style="font-size: 10px; font-weight: bold;" onclick="ResetProg('p0')">NOK-1</button>
                     </td>
                     <td style="width: 35px;">
-                        <button id = "save_p0" class="bsave button_disabled">&#x2713;</button>
+                        <button id = "save_p0" class="bsave button_disabled" onclick="SaveProg('p0')">&#x2713;</button>
                     </td>
                 </tr>
                 <tr style="height: 35px;">
@@ -48,10 +53,10 @@
                         <input type="time" id="dv1_stop"  onchange="TimeUpdate('dv1_stop')" style="border: none; font-size: 20px;">
                     </td>
                     <td style="width: 35px;">
-                        <button id = "reset_p1" class="bsave button_enabled"  style="font-size: 10px; font-weight: bold;">OK0</button>
+                        <button id = "reset_p1" class="bsave button_enabled"  style="font-size: 10px; font-weight: bold;" onclick="ResetProg('p1')">OK0</button>
                     </td>
                     <td style="width: 35px;">
-                        <button id = "save_p1" class="bsave button_disabled">&#x2713;</button>
+                        <button id = "save_p1" class="bsave button_disabled" onclick="SaveProg('p1')">&#x2713;</button>
                     </td>
                 </tr>
             </table>
@@ -120,6 +125,8 @@
             </table>
             <hr>
         </div>
+    <div id = "mask_div" class = "mask"> 
+    </div>
     </div>
 </body>
 </html>
