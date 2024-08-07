@@ -1,7 +1,3 @@
-const dstring = "... se deschide";
-const istring = "... se inchide";
-var idx, monTimer;
-
 var gdevName;
 const gdevString = "Poarta Auto";
 var gtopicCmd;
@@ -10,15 +6,20 @@ var gtopicMonitor;
 
 var gclient; 
 var g_connected;
+var devip;
+var gate_state;
+var moving_state;
+var cmd_sel;
 
 const STEADY_STATE = 1;
 const MOVING_STATE = 2;
+const OPEN_IN_PROGRESS = 3;
+const CLOSE_IN_PROGRESS = 4;
 const STATE_CLOSED = 3;
 const STATE_OPEN = 2;
 const STATE_OPENP = 1;
-const CMD_CLOSE = 1;
-const CMD_OPEN = 0;
-const CMD_COMPLETE = 2;
+const CMD_FULL = 1;
+const CMD_PED = 2;
 
 function getGateClient()
     {
@@ -32,6 +33,30 @@ function getGateClient()
         username: 'browser',
         password: 'browser',
         }
+    const pparams = new URLSearchParams(document.location.search);
+    devip = pparams.get("ip");
+    //document.getElementById('openped-input').addEventListener("change", toogleBGColor(), false);
+    document.getElementById("openped-input").disabled = true;
+    document.getElementById("openfull-input").disabled = true;
+    document.getElementById('openped-input').addEventListener("change", 
+        function()
+            {
+            if(this.checked) 
+                document.getElementById("openped").style.backgroundColor = "#2196F3";
+            else 
+                document.getElementById("openped").style.backgroundColor = "#ccc";
+            }, false);
+    document.getElementById('openfull-input').addEventListener("change", 
+        function()
+            {
+            if(this.checked) 
+                document.getElementById("openfull").style.backgroundColor = "#2196F3";
+            else 
+                document.getElementById("openfull").style.backgroundColor = "#ccc";
+            }, false);
+    
+    // disable both sliders
+    setSliders(0, 0);
     gdevName = '';
     if(g_connected)
         gclient.end();
@@ -58,10 +83,10 @@ function processMessage(topic, payload, packet)
         case 'gnetdev/response':
             if(gdevName == '')
                 {
-                if(params[0].indexOf("gate") >= 0)
-                    gdevName = params[1];
+                if(params[0].indexOf("gate") >= 0)// && params[2] == devip)
+                    gdevName = params[0];
                 }
-            if(params[1] == gdevName)
+            if(params[0] == gdevName)
                 {
                 gdevName = params[1];
                 var topic = params[0] + '/';
@@ -74,98 +99,106 @@ function processMessage(topic, payload, packet)
                 }
             break;
         case gtopicState:
-            updateState(params[2], params[3], params[5]);
+        case gtopicMonitor:
+            gate_state = params[2];
+            moving_state = params[3];
+            setSliders();
             break;
         default:
             break;
         }
     }
 
-function openGate()
+function openfullClick()
     {
-    gclient.publish(gtopicCmd, "open");
-    }
-function closeGate()
-    {
-    gclient.publish(gtopicCmd, "close");
-    }
-
-function updateState(state, movings, cmd_state)
-    {
-    if(movings == STEADY_STATE)
+    cmd_sel = 0;
+    if(moving_state == STEADY_STATE)
         {
-        clearInterval(monTimer);
-        if(state == STATE_CLOSED)
+        if(gate_state == STATE_OPEN)
             {
-            document.getElementById("progress").innerHTML = "inchisa";
-            document.getElementById("bclose").className = "button button-posclose button_disabled";
-            document.getElementById("bopen").className = "button button-posopen button_enabled";
-            document.getElementById("bclose").innerHTML = "Inchide";
-            document.getElementById("bopen").innerHTML = "Deschide";
+            gclient.publish(gtopicCmd, "close");
+            cmd_sel = CMD_FULL;
             }
-        else if(state == STATE_OPEN)
+        else
             {
-            document.getElementById("progress").innerHTML = "deschisa";
-            document.getElementById("bclose").className = "button button-posclose button_enabled";
-            document.getElementById("bopen").className = "button button-posopen button_disabled";
-            document.getElementById("bclose").innerHTML = "Inchide";
-            document.getElementById("bopen").innerHTML = "Deschide";
+            gclient.publish(gtopicCmd, "open");
+            cmd_sel = CMD_FULL;
             }
-        else if(state == STATE_OPENP)
-            {
-            document.getElementById("progress").innerHTML = "deschisa partial";
-            document.getElementById("bclose").className = "button button-posclose button_enabled";
-            document.getElementById("bopen").className = "button button-posopen button_enabled";
-            document.getElementById("bclose").innerHTML = "Inchide";
-            document.getElementById("bopen").innerHTML = "Deschide";
-            }
-        }
-    else if(movings == MOVING_STATE)
-        {
-        if(cmd_state == CMD_CLOSE)
-            {
-            document.getElementById("bclose").innerHTML = "Stop";
-            document.getElementById("bopen").className = "button button-posopen button_disabled";
-            }
-        else if(cmd_state == CMD_OPEN)
-            {
-            document.getElementById("bopen").innerHTML = "Stop";
-            document.getElementById("bclose").className = "button button-posclose button_disabled";
-            }
-                
-        idx = 0;
-        monTimer = setInterval(showProgress, 1000, cmd_state);
-        }
-    }
-
-function showProgress(cmd)
-    {
-    console.log(idx);
-    if(cmd == CMD_OPEN)
-        {
-        document.getElementById("progress").innerHTML = rotate(dstring, dstring.length - idx);
-        idx = (idx + 1) % dstring.length;
-        }
-    else if(cmd == CMD_CLOSE)
-        {
-        document.getElementById("progress").innerHTML = rotate(istring, idx);
-        idx = (idx + 1) % istring.length;
         }
     else
         {
+        gclient.publish(gtopicCmd, "open");
+        cmd_sel = CMD_FULL;
         }
     }
-
-function rotate(text, noOfChars = 0)
+function openpedClick()
     {
-    const n = noOfChars % text.length;
-    const part1 = text.slice(0, n);
-    const part2 = text.slice(n);
-    return `${part2}${part1}`;
+    if(cmd_sel == CMD_PED && moving_state == STEADY_STATE && gate_state == STATE_OPEN)
+        {
+        gclient.publish(gtopicCmd, "close");
+        }
+    else
+        {
+        cmd_sel = 0;
+        if(moving_state == STEADY_STATE && gate_state == STATE_CLOSED)
+            {
+            gclient.publish(gtopicCmd, "openped");
+            cmd_sel = CMD_PED;
+            }
+        else
+            document.getElementById("openped-input").checked = false;
+        }
     }
 
 function clean_connection()
     {
     if(g_connected)
         gclient.end();
+    }
+
+function setSliders()
+    {
+    if(moving_state == STEADY_STATE)
+        {
+        if(gate_state == 0) //switch disabled
+            {
+            document.getElementById("openped-input").disabled = true;
+            //document.getElementById("openped").style.backgroundColor = "#ccc";
+            document.getElementById("openfull-input").disabled = true;
+            //document.getElementById("openfull").style.backgroundColor = "#ccc";
+            }
+        else if(gate_state == STATE_CLOSED) //gate closed
+            {
+            document.getElementById("openped-input").disabled = false;
+            document.getElementById("openped-input").checked = false;
+            document.getElementById("openped").style.backgroundColor = "#ccc";
+            document.getElementById("openfull-input").disabled = false;
+            document.getElementById("openfull-input").checked = false;
+            document.getElementById("openfull").style.backgroundColor = "#ccc";
+            }
+        else if(gate_state == STATE_OPEN) //gate open
+            {
+            document.getElementById("openped-input").disabled = false;
+            document.getElementById("openfull-input").disabled = false;
+            document.getElementById("openped-input").checked = true;
+            document.getElementById("openfull-input").checked = true;
+            document.getElementById("openfull").style.backgroundColor = "#2196F3";
+            document.getElementById("openped").style.backgroundColor = "#2196F3";
+            }
+        }
+    else if(moving_state == MOVING_STATE || moving_state == OPEN_IN_PROGRESS || moving_state == CLOSE_IN_PROGRESS)
+        {
+        var ssel = null;
+        if(cmd_sel == CMD_PED)
+            var ssel = document.getElementById("openped");
+        else if(cmd_sel == CMD_FULL)
+            var ssel = document.getElementById("openfull");
+        if(ssel)
+            {
+            if(ssel.style.backgroundColor == "rgb(33, 150, 243)")
+                ssel.style.backgroundColor = "#ccc";
+            else
+                ssel.style.backgroundColor = "#2196F3";
+            }
+        }
     }

@@ -78,7 +78,9 @@ function processMessage(topic, payload, packet)
                     strdest = 'wp.html';
                 if(strdest != "");
                     {
-                    str += strdest;                    
+                    str += strdest;  
+                    str += "?ip=";
+                    str += params[2];                  
                     str += '">'
                     str += '<b>' + iot.longName + '</b></a>';
                     var r = x.insertRow(-1);

@@ -370,6 +370,8 @@
     .button-posi 		{top: 300px;	left: 10px}
 	.button-posopen 	{top: 120px;	left: 90px;}
     .button-posclose 	{top: 200px;	left: 90px;}
+    .button-posped   	{top: 120px;	left: 90px;}
+    .button-posauto 	{top: 200px;	left: 90px;}
     .button-postap 	    {top: 5px;	left: 120px;}
 
     #thist /*table history */
