@@ -54,7 +54,7 @@
 
 
 </head>
-<body onload="zoneInit()" onbeforeunload="b4unload()">
+<body onload="zoneInit()">
     <button id = "back" class = "back" onclick="location.href='./wp.html'" ></button>
     <div class="hdiv" id = "hdiv">
         Program:
@@ -62,7 +62,7 @@
 
         <div class="myDiv3">
         	Robinet
-            <button id = "btap" onclick = "" class = "button button-postap button_disabled">
+            <button id = "btap" onclick = "open_close()" class = "button button-postap button_disabled">
             	Set...
             </button>
         </div>
@@ -127,7 +127,7 @@
     <script type="text/javascript">
     window.onbeforeunload = function() 
         {
-        if(t_edit == 1 || s_edit == 1)
+        if(t_edit != -1 || s_edit == 1)
             return 1;
         return null;
         }

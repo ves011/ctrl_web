@@ -6,6 +6,7 @@ var ptopicState;
 var ptopicMonitor;
 var ptopicState_a;
 var ptopicMonitor_a;
+var ptopicCtrl;
 
 var p_connected = false;
 var client_pump;
@@ -20,6 +21,7 @@ var active_dv = -1;
 var active_no = -1;
 var color_idx = true;
 var dvop_inprogress = 0;
+var devip;
 
 const ONLINE = 2;
 const OFFLINE = 3;
@@ -40,6 +42,15 @@ function getPumpClient()
         username: 'browser',
         password: 'browser',
         }
+    const pparams = new URLSearchParams(document.location.search);
+    devip = pparams.get("ip");
+
+    var str1 = '<a href = "./i_zone.html?dzone=';
+    var str2 = '&ip='+devip + '">';
+    document.getElementById("z0_lnk").innerHTML = str1 + '0' + str2 + "Zona 1</a>";
+    document.getElementById("z1_lnk").innerHTML = str1 + '1' + str2 + "Zona 2</a>";
+    document.getElementById("z2_lnk").innerHTML = str1 + '2' + str2 + "Zona 3</a>";
+    document.getElementById("z3_lnk").innerHTML = str1 + '3' + str2 + "Zona 4</a>";
     pdevName = '';
     if(p_connected)
         client_pump.end();
@@ -72,10 +83,10 @@ function processMessage(topic, payload, packet)
         case 'gnetdev/response':
             if(pdevName == '')
                 {
-                if(params[0].indexOf("wp") >= 0)
+                if(params[0].indexOf("wp") >= 0)// && params[2] == devip)
                     pdevName = params[1];
                 }
-            if(params[1] == pdevName)
+            if(params[1] == pdevName)// && params[2] == devip)
                 {
                 pdevName = params[1];
                 var topic = params[0] + '/';
@@ -84,6 +95,7 @@ function processMessage(topic, payload, packet)
                 ptopicMonitor = topic + 'monitor';
                 ptopicState_a = ptopicState + '/w';
                 ptopicMonitor_a = ptopicMonitor + '/w';
+                gtopicCtrl = topic + 'ctrl';
                 client_pump.subscribe(ptopicState);
                 client_pump.subscribe(ptopicMonitor);
                 client_pump.subscribe(ptopicState_a);
@@ -91,7 +103,7 @@ function processMessage(topic, payload, packet)
                 client_pump.publish(ptopicCmd, 'pump state');
                 client_pump.publish(ptopicCmd, 'dv state');
                 client_pump.publish(ptopicCmd, 'dv program');
-
+                //runScript();
                 }
             break;
         case ptopicState:
@@ -131,6 +143,7 @@ function processMessage(topic, payload, packet)
                 case 'phist':
                     break;
                 }
+            break;
         case ptopicMonitor:
             pump_mon = {state: params[3], status: params[4], current: params[5], pres_kpa: params[6], debit: params[7], total_qwater: params[8]};
             document.getElementById("pkpa").innerHTML = pump_mon.pres_kpa;
@@ -176,6 +189,7 @@ function processMessage(topic, payload, packet)
                     dvop_inprogress = 2;
                     break;
                 }
+            break;
         default:
             break;
         }
@@ -325,3 +339,110 @@ function startPump()
         client_pump.publish(ptopicCmd, 'stop');
     }
 */
+function runScript()
+    {
+client_pump.publish(gtopicCtrl, "echo \"0  0    0  1900-01-00T00:00:00  2024-07-06T19:15:00,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0    0  1900-01-00T00:00:00  2024-07-06T19:35:18,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  432  2024-07-06T19:40:00  2024-07-06T19:55:27,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  442  2024-07-06T20:00:00  2024-07-06T20:15:44,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0    0  2024-07-07T19:04:28  0000-00-00T00:00:00,  4 20\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0    0  2024-07-07T19:04:58  0000-00-00T00:00:00,  4 20\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  249  2024-07-07T19:06:38  2024-07-07T19:15:32,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  461  2024-07-07T19:20:00  2024-07-07T19:35:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  431  2024-07-07T19:40:01  2024-07-07T19:55:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  449  2024-07-07T20:00:00  2024-07-07T20:15:46,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  458  2024-07-09T05:00:00  2024-07-09T05:15:33,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  461  2024-07-09T05:20:00  2024-07-09T05:35:29,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  432  2024-07-09T05:40:00  2024-07-09T05:55:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0    0  2024-07-09T06:00:00  0000-00-00T00:00:00,  4 13\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  457  2024-07-10T05:00:00  2024-07-10T05:15:33,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  459  2024-07-10T05:20:00  2024-07-10T05:35:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  437  2024-07-10T05:40:00  2024-07-10T05:55:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0    0  2024-07-10T06:00:00  0000-00-00T00:00:00,  4 13\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  459  2024-07-11T05:00:00  2024-07-11T05:15:33,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  461  2024-07-11T05:20:00  2024-07-11T05:35:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  431  2024-07-11T05:40:00  2024-07-11T05:55:30,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0    0  2024-07-11T06:00:00  0000-00-00T00:00:00,  4 13\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0   91  2024-07-12T07:46:08  2024-07-12T07:50:47,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  457  2024-07-12T07:52:00  2024-07-12T08:07:32,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  460  2024-07-12T08:08:00  2024-07-12T08:23:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  440  2024-07-12T08:25:00  2024-07-12T08:40:46,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0   39  2024-07-12T11:52:00  2024-07-12T11:54:35,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  458  2024-07-13T05:00:00  2024-07-13T05:15:33,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  461  2024-07-13T05:20:00  2024-07-13T05:35:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  281  2024-07-13T05:40:00  2024-07-13T05:50:29,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  415  2024-07-13T07:25:58  2024-07-13T07:40:47,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  450  2024-07-14T05:00:00  2024-07-14T05:15:33,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  459  2024-07-14T05:20:00  2024-07-14T05:35:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  280  2024-07-14T05:40:00  2024-07-14T05:50:29,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  428  2024-07-14T05:55:00  2024-07-14T06:10:54,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  448  2024-07-15T05:00:00  2024-07-15T05:15:33,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  460  2024-07-15T05:20:00  2024-07-15T05:35:29,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  281  2024-07-15T05:40:00  2024-07-15T05:50:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  438  2024-07-15T05:55:00  2024-07-15T06:10:54,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  417  2024-07-16T06:46:51  2024-07-16T07:01:31,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  454  2024-07-16T07:03:00  2024-07-16T07:18:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  273  2024-07-16T07:20:00  2024-07-16T07:30:27,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  583  2024-07-16T07:34:00  2024-07-16T07:54:50,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  135  2024-07-17T05:10:00  2024-07-17T05:15:32,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  141  2024-07-17T05:20:00  2024-07-17T05:25:29,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  131  2024-07-17T05:30:00  2024-07-17T05:35:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  122  2024-07-17T05:40:00  2024-07-17T05:45:50,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  444  2024-07-18T05:00:01  2024-07-18T05:15:32,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  452  2024-07-18T05:20:14  2024-07-18T05:35:36,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  431  2024-07-18T05:40:03  2024-07-18T05:55:29,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  602  2024-07-18T06:00:07  2024-07-18T06:20:58,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  446  2024-07-19T05:00:00  2024-07-19T05:15:32,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  461  2024-07-19T05:20:00  2024-07-19T05:35:28,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  432  2024-07-19T05:40:00  2024-07-19T05:55:27,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  605  2024-07-19T06:00:01  2024-07-19T06:20:50,  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  445  2024-07-21T05:00:00  2024-07-21T05:15:34  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  460  2024-07-21T05:20:00  2024-07-21T05:35:28  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  282  2024-07-21T05:40:00  2024-07-21T05:50:28  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  603  2024-07-21T06:00:00  2024-07-21T06:20:51  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  439  2024-07-30T05:00:00  2024-07-30T05:15:33  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  459  2024-07-30T05:20:00  2024-07-30T05:35:29  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  272  2024-07-30T05:40:01  2024-07-30T05:50:28  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  589  2024-07-30T06:00:00  2024-07-30T06:20:50  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  430  2024-07-31T05:00:00  2024-07-31T05:15:33  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  459  2024-07-31T05:20:00  2024-07-31T05:35:29  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  272  2024-07-31T05:40:00  2024-07-31T05:50:28  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  586  2024-07-31T06:00:00  2024-07-31T06:21:21  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  425  2024-08-01T05:00:00  2024-08-01T05:15:33  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  460  2024-08-01T05:20:00  2024-08-01T05:35:29  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  271  2024-08-01T05:40:00  2024-08-01T05:50:28  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  591  2024-08-01T06:00:00  2024-08-01T06:20:51  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  417  2024-08-02T05:00:00  2024-08-02T05:15:34  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  460  2024-08-02T05:20:00  2024-08-02T05:35:29  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  271  2024-08-02T05:40:01  2024-08-02T05:50:28  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  604  2024-08-02T06:00:00  2024-08-02T06:20:52  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  442  2024-08-03T05:00:31  2024-08-03T05:15:32  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  460  2024-08-03T05:20:00  2024-08-03T05:35:28  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  270  2024-08-03T05:40:00  2024-08-03T05:50:32  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  604  2024-08-03T06:00:00  2024-08-03T06:20:51  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  0  457  2024-08-04T05:00:00  2024-08-04T05:15:33  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  461  2024-08-04T05:20:00  2024-08-04T05:35:29  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  271  2024-08-04T05:40:00  2024-08-04T05:50:27  2  0\" >> program_status.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  600  2024-08-04T06:00:00  2024-08-04T06:20:51  2  0\" >> program_status.txt");
+
+client_pump.publish(gtopicCtrl, "echo \"88 5500\" >> qcal.txt");
+client_pump.publish(gtopicCtrl, "echo 459 >> psensor_voffset.txt");
+client_pump.publish(gtopicCtrl, "echo 100 >> pump_limits.txt");
+client_pump.publish(gtopicCtrl, "echo 350 >> pump_limits.txt");
+client_pump.publish(gtopicCtrl, "echo 5000 >> pump_limits.txt");
+client_pump.publish(gtopicCtrl, "echo 10 >> pump_limits.txt");
+client_pump.publish(gtopicCtrl, "echo 10 >> pump_limits.txt");
+client_pump.publish(gtopicCtrl, "echo \"2024-07-18T11:20 > 28783069\" >> twater.txt");
+
+client_pump.publish(gtopicCtrl, "echo \"0  0  5  0  5 15 457  7  0\" >> dv_program.txt");
+client_pump.publish(gtopicCtrl, "echo \"0  1  5  0  6 30  0  7  0\" >> dv_program.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  0  5 20  5 35 461  7  0\" >> dv_program.txt");
+client_pump.publish(gtopicCtrl, "echo \"1  1  0  1  0  0  0  7  0\" >> dv_program.txt");
+client_pump.publish(gtopicCtrl, "echo \"2  0  5 40  5 50 271  7  0\" >> dv_program.txt");
+client_pump.publish(gtopicCtrl, "echo \" 2  1  0  0  0  0  0  7  0\" >> dv_program.txt");
+client_pump.publish(gtopicCtrl, "echo \"3  0  6  0  6 20 600  7  0\" >> dv_program.txt");
+client_pump.publish(gtopicCtrl, "echo \" 3  1  0  0  0  0  0  7  0\" >> dv_program.txt");
+
+client_pump.publish(gtopicCtrl, "echo 3 >> pump_status.txt");
+
+    }

@@ -3,6 +3,7 @@ const gdevString = "Poarta Auto";
 var gtopicCmd;
 var gtopicState;
 var gtopicMonitor;
+var gtopicCtrl;
 
 var gclient; 
 var g_connected;
@@ -83,7 +84,7 @@ function processMessage(topic, payload, packet)
         case 'gnetdev/response':
             if(gdevName == '')
                 {
-                if(params[0].indexOf("gate") >= 0)// && params[2] == devip)
+                if(params[0].indexOf("gate") >= 0 && params[2] == devip)
                     gdevName = params[0];
                 }
             if(params[0] == gdevName)
@@ -93,9 +94,11 @@ function processMessage(topic, payload, packet)
                 gtopicCmd = topic + 'cmd';
                 gtopicState = topic + 'state';
                 gtopicMonitor = topic + 'monitor';
+                gtopicCtrl = topic + 'ctrl';
                 gclient.subscribe(gtopicState);
                 gclient.subscribe(gtopicMonitor);
                 gclient.publish(gtopicCmd, 'state');
+                //runScript();
                 }
             break;
         case gtopicState:
@@ -202,3 +205,4 @@ function setSliders()
             }
         }
     }
+

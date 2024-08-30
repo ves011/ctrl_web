@@ -1,8 +1,9 @@
 let zone = -1;
 var phist = [{dv: 0, no: 0, qwater: 0, start: "", stop: "", cs: 0, fault: 0}];
 var phist_entries = 0;
-var t_edit = 0, s_edit = 0;
+var t_edit = -1, s_edit = 0;
 var zone_idx = -1;
+var devip;
 function zoneInit()
     {
 	const url = 'wss://proxy.gnet/wss/';
@@ -16,9 +17,12 @@ function zoneInit()
         password: 'browser',
         }
 	pdevName = '';
-    const queryString = window.location.search;
+    //const pparams = new URLSearchParams(document.location.search);
+   // devip = pparams.get("ip");
+    const queryString = document.location.search;
     const urlParams = new URLSearchParams(queryString);
     zone = parseInt(urlParams.get('dzone'));
+    devip = urlParams.get('ip');
     var t = document.getElementById("hdiv");
     z = zone + 1;
     t.firstChild.textContent = "Zona de irigatie " + z;
@@ -42,27 +46,27 @@ function zoneInit()
 function processZMessage(topic, payload, packet)
     {
     b = String.fromCharCode(...payload);
-    console.log('Message from server ', topic + ': ' + b);
+    //console.log('Message from server ', topic + ': ' + b);
     params = b.split('\x01');
     switch(topic)
 		{
 		case 'gnetdev/response':
             if(pdevName == '')
                 {
-                if(params[0].indexOf("wp") >= 0)
+                if(params[0].indexOf("wp") >= 0) //&& devip == params[2])
                     pdevName = params[1];
                 }
-            if(params[1] == pdevName)
+            if(params[1] == pdevName)// && devip == params[2])
                 {
                 pdevName = params[1];
                 var topic = params[0] + '/';
                 ptopicCmd = topic + 'cmd';
-                //ptopicState = topic + 'state';
-                //ptopicMonitor = topic + 'monitor';
+                ptopicState = topic + 'state';
+                ptopicMonitor = topic + 'monitor';
                 ptopicState_a = topic + 'state' + '/w';
-                ptopicMonitor_a = topic + 'state' + '/w';
-                //client_pump.subscribe(ptopicState);
-                //client_pump.subscribe(ptopicMonitor);
+                ptopicMonitor_a = topic + 'monitor' + '/w';
+                client_pump.subscribe(ptopicState);
+                client_pump.subscribe(ptopicMonitor);
                 client_pump.subscribe(ptopicState_a);
                 client_pump.subscribe(ptopicMonitor_a);
                 client_pump.publish(ptopicCmd, 'dv state');
@@ -85,15 +89,12 @@ function processZMessage(topic, payload, packet)
                                 {
                                 bs.innerHTML = "Inchide";
                                 bs.className = "button button-postap button_enabled button_offline";
-                                bs.color = "blue";
                                 }
                             else 
                                 {
                                 bs.innerHTML = "Deschide";
                                 bs.className = "button button-postap button_enabled button_online";
-                                bs.color = "green";
                                 }
-                            break;
                             }
                        }
 					break;
@@ -132,7 +133,7 @@ function processZMessage(topic, payload, packet)
                                 }
                             }
                         }
-                    t_edit = 0;
+                    t_edit = -1;
                     s_edit = 0;
                     document.getElementById("save_p0").className = "bsave button_disabled";
                     break;
@@ -162,6 +163,33 @@ function processZMessage(topic, payload, packet)
                 }
 			break;
 		case ptopicMonitor_a:
+            switch(params[2])
+                {
+                case 'dvop':
+                    if(params[3] == zone)
+                        {
+                        if(document.getElementById("btap").className.indexOf("button_online") >= 0)
+                            document.getElementById("btap").className = "button button-postap button_enabled button_offline";
+                        else
+                            document.getElementById("btap").className = "button button-postap button_enabled button_online";
+                        }
+                    break;
+                case 'dvstate':
+                    if(params[3] == zone)
+                        {
+                        if(params[4] == 1)
+                            {
+                            document.getElementById("btap").innerHTML = "Inchide";
+                            document.getElementById("btap").className = "button button-postap button_enabled button_offline";
+                            }
+                        else
+                            {
+                            document.getElementById("btap").innerHTML = "Deschide";
+                            document.getElementById("btap").className = "button button-postap button_enabled button_online";
+                            }
+                        }
+                    break;
+                }
 			break;
 		}
 	}
@@ -266,7 +294,7 @@ function resetProg(no)
     }
 function timeEdit(ss, prog_no)
     {
-    t_edit = 1;
+    t_edit = -1;
     vedit = document.getElementById("dv_" + ss + prog_no).value;
     sth = vedit.substring(0, 2);
     stm = vedit.substring(3, 5);
@@ -278,7 +306,7 @@ function timeEdit(ss, prog_no)
                 {
                 if(dv_program[i].starth != sth || dv_program[i].startm != stm)
                     {
-                    t_edit = 1;
+                    t_edit = prog_no;
                     dv_program[i].starth = sth;
                     dv_program[i].startm = stm;
                     }
@@ -287,7 +315,7 @@ function timeEdit(ss, prog_no)
                 {
                 if(dv_program[i].stoph != sth || dv_program[i].stopm != stm)
                     {
-                    t_edit = 1;
+                    t_edit = prog_no;
                     dv_program[i].stoph = sth;
                     dv_program[i].stopm = stm;
                     }
@@ -295,18 +323,18 @@ function timeEdit(ss, prog_no)
             break;
             }
         }
-    if(t_edit == 1)
+    if(t_edit != -1)
         document.getElementById("save_p0").className = "bsave button_enabled";
     }
 
 function saveProg()
     {
     var str2publish = "";
-    if(t_edit == 1)
+    if(t_edit != -1)
         {
-        for(i = 0; i < DVCOUNT; i++)
+        for(i = 0; i < DVCOUNT * wpday; i++)
             {
-            if(dv_program[i].dv_no == zone)
+            if(dv_program[i].dv_no == zone && dv_program[i].no == t_edit)
                 {
                 var str2publish = "dv program " + zone + " " + dv_program[i].no + " " + 
                         dv_program[i].starth + ":" + dv_program[i].startm + " " + 
@@ -318,7 +346,7 @@ function saveProg()
     if(s_edit == 1)
         {
         wpd = 0;
-        for(i = 0; i < DVCOUNT; i++)
+        for(i = 0; i < DVCOUNT * wpday; i++)
             {
             if(dv_program[i].dv_no == zone)
                 if(dv_program[i].cs != 7)
@@ -327,6 +355,17 @@ function saveProg()
         str2publish = "dv wpday " + zone + " " + wpd;
         client_pump.publish(ptopicCmd, str2publish,); 
         }
-    if(s_edit == 1 || t_edit == 1)
+    if(s_edit == 1 || t_edit != -1)
         client_pump.publish(ptopicCmd, "dv program");
+    }
+function open_close()
+    {
+    var strPub = "";
+    bs = document.getElementById("btap");
+    if(bs.innerHTML == "Inchide")
+        strPub = "dv close " + zone;
+    else if(bs.innerHTML == "Deschide")
+        strPub = "dv open " + zone;
+    if(strPub != "")
+        client_pump.publish(ptopicCmd, strPub);
     }
