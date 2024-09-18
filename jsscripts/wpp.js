@@ -83,10 +83,10 @@ function processMessage(topic, payload, packet)
         case 'gnetdev/response':
             if(pdevName == '')
                 {
-                if(params[0].indexOf("wp") >= 0)// && params[2] == devip)
+                if(params[0].indexOf("wp") >= 0 && params[2] == devip)
                     pdevName = params[1];
                 }
-            if(params[1] == pdevName)// && params[2] == devip)
+            if(params[1] == pdevName && params[2] == devip)
                 {
                 pdevName = params[1];
                 var topic = params[0] + '/';

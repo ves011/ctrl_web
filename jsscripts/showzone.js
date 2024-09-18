@@ -17,8 +17,8 @@ function zoneInit()
         password: 'browser',
         }
 	pdevName = '';
-    //const pparams = new URLSearchParams(document.location.search);
-   // devip = pparams.get("ip");
+    const pparams = new URLSearchParams(document.location.search);
+    devip = pparams.get("ip");
     const queryString = document.location.search;
     const urlParams = new URLSearchParams(queryString);
     zone = parseInt(urlParams.get('dzone'));
@@ -53,10 +53,10 @@ function processZMessage(topic, payload, packet)
 		case 'gnetdev/response':
             if(pdevName == '')
                 {
-                if(params[0].indexOf("wp") >= 0) //&& devip == params[2])
+                if(params[0].indexOf("wp") >= 0 && devip == params[2])
                     pdevName = params[1];
                 }
-            if(params[1] == pdevName)// && devip == params[2])
+            if(params[1] == pdevName && devip == params[2])
                 {
                 pdevName = params[1];
                 var topic = params[0] + '/';
@@ -368,4 +368,8 @@ function open_close()
         strPub = "dv open " + zone;
     if(strPub != "")
         client_pump.publish(ptopicCmd, strPub);
+    }
+function goBack()
+    {
+    location.href='./wp.html' + "?ip=" + devip;
     }

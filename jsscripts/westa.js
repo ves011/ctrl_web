@@ -2,12 +2,15 @@ var wdevName;
 const devString = "Statia meteo";
 
 var wtopicCmd;
+var wtopicLinc;
+var wtopicLincWR;
 var wtopicState;
 var wtopicMonitor;
+var fromInt, toInt;
 
 var w_connected = false;
 var client_westa;
-const fileData = [];
+
 const temps = [];
 const press = [];
 const presns = [];
@@ -16,6 +19,7 @@ const times = [];
 const itus = [];
 var idx = 0;
 var requestdata = 0;
+var reqID = 0;
 var mint, maxt, minp, maxp, minh, maxh, mini, maxi, maxtp, mintp;
 var temperatureChart = null;
 var pressureChart = null;
@@ -47,6 +51,11 @@ function getWestaClient()
     client_westa.on('disconnect', function (packet) {console.log(packet)});
     client_westa.on('error', function (error){console.log(error)})
     client_westa.on('message', function (topic, payload, packet) {processMessage(topic, payload, packet)});
+    toInt = new Date();
+    document.getElementById("to").valueAsDate = toInt;//new Date();
+    fromInt = new Date();
+    fromInt.setDate(fromInt.getDate() - 1);
+    document.getElementById("from").valueAsDate = fromInt;
     }
 function processMessage(topic, payload, packet)
     {
@@ -66,26 +75,29 @@ function processMessage(topic, payload, packet)
                 wdevName = params[1];
                 var topic = params[0] + '/';
                 wtopicCmd = topic + 'cmd';
+                wtopicLinc = 'linc/tph_range';
                 wtopicState = topic + 'state';
                 wtopicMonitor = topic + 'monitor';
+                wtopicLincWR = 'linc/wr';
                 client_westa.subscribe(wtopicState);
                 client_westa.subscribe(wtopicMonitor);
+                client_westa.subscribe(wtopicLincWR);
                 westaGetData();
                 }
             break;
-        case wtopicState:
-            if(params[2].indexOf("WR ") == 0)
+        case wtopicLincWR:
+            if(params[2] == reqID && params[3].indexOf("WR ") == 0)
                 {
                 //get all the lines starting with "WR "
-                fileData[idx] = params[2];
-                data = params[2].split(' ');
+                
+                data = params[3].split(' ');
                 epd = new Date(data[1]);
                 times[idx] = epd.getTime();
                 //times[idx] = data[1];
                 temps[idx] = data[2];
-                press[idx] = data[3];
-                presns[idx] = data[4];
-                hums[idx] = data[5];
+                press[idx] = data[4];
+                presns[idx] = data[5];
+                hums[idx] = data[6];
                 itus[idx] = 0.81 * Number(temps[idx]) + 0.01 * Number(hums[idx]) * (0.99 * Number(temps[idx]) - 14.3) + 46.3;
                 if(Number(temps[idx]) > maxt)
                     maxt = Number(temps[idx]);
@@ -107,10 +119,10 @@ function processMessage(topic, payload, packet)
                 mintp = (minh < mini)?minh:mini;
                 idx++;
                 }
-            else if(params[2].indexOf("WRS") == 0)
+            else if(params[2] == reqID && params[3].indexOf("WRS ") == 0)
                 {
                 //summary 
-                summary = params[2].split(' ');
+                summary = params[3].split(' ');
                 if(summary[2] == idx)
                     {
                     if(Number(presns[0]) > maxp)
@@ -138,38 +150,52 @@ function processMessage(topic, payload, packet)
                         requestdata = 0;
                         }
                     }
+                reqID = 0;
                 }
-/*
-            else if(params[2].indexOf("BMP") == 0)
-                {
-                epd = new Date(params[0]);
-                const formattedDate = epd.toLocaleString("en-GB", 
-                    {
-                    day: "numeric",
-                    month: "short",
-                    hour: "numeric",
-                    minute: "2-digit"
-                    });
-                document.getElementById("ctime").innerHTML = formattedDate + ':';
-                document.getElementById("ctemp").innerHTML = Number(params[3]).toFixed(1) + ' °C ';
-                document.getElementById("cpres").innerHTML = Number(params[4]).toFixed(1) + ' mBar ';
-                } */
             break;
         case wtopicMonitor:
-            if(params[2].indexOf("BMPDHT") == 0)
+            var t = document.querySelector('input[name="history"]:checked').value;
+            epd = new Date(params[2]);
+            const formattedDate = epd.toLocaleString("en-GB", 
                 {
-                epd = new Date(params[0]);
-                const formattedDate = epd.toLocaleString("en-GB", 
+                day: "numeric",
+                month: "short",
+                hour: "numeric",
+                minute: "2-digit"
+                });
+            document.getElementById("ctime").innerHTML = formattedDate + ':';
+            document.getElementById("ctemp").innerHTML = Number(params[3]).toFixed(1) + ' °C ';
+            document.getElementById("cpres").innerHTML = Number(params[4]).toFixed(1) + ' mBar ';
+            document.getElementById("chum").innerHTML = Number(params[6]).toFixed(1) + ' % ';
+            //epd = new Date(params[2]);
+            if(t == 'tsel')
+                {
+                if(idx > 1)
                     {
-                    day: "numeric",
-                    month: "short",
-                    hour: "numeric",
-                    minute: "2-digit"
-                    });
-                document.getElementById("ctime").innerHTML = formattedDate + ':';
-                document.getElementById("ctemp").innerHTML = Number(params[3]).toFixed(1) + ' °C ';
-                document.getElementById("cpres").innerHTML = Number(params[4]).toFixed(1) + ' mBar ';
-                document.getElementById("chum").innerHTML = Number(params[6]).toFixed(1) + ' % ';
+                    for(i = 0; i < idx - 1; i++)
+                        {
+                        times[i] = times[i + 1];
+                        temps[i] = temps[i + 1];
+                        press[i] = press[i + 1];
+                        presns[i] = presns[i + 1];
+                        hums[i] = hums[i + 1];
+                        itus[i] = itus[i + 1];
+                        times[i] = times[i + 1];
+                        }
+                    
+                    times[idx - 1] = epd.getTime();
+                    temps[idx -1] = params[3];
+                    press[idx -1] = params[4];
+                    presns[idx -1] = params[5];
+                    hums[idx - 1] = params[6];
+                    itus[idx - 1] = 0.81 * Number(temps[idx -1]) + 0.01 * Number(hums[idx -1]) * (0.99 * Number(temps[idx - 1]) - 14.3) + 46.3;
+                    
+                    //plotTemp();
+                    if(temperatureChart)
+                        temperatureChart.update();
+                    if(pressureChart)
+                        pressureChart.update();
+                    }
                 }
             break;
         default:
@@ -360,10 +386,7 @@ function enableTime()
 function enableInt()
     {
     }
-function setTimeHistory()
-    {
-    westaGetData();
-    }
+
 
 function westaGetData()
     {
@@ -399,16 +422,40 @@ function westaGetData()
                 break;
             }
         var datestring = (date.getFullYear()) + "-" + ("0"+(date.getMonth()+1)).slice(-2) + "-" +
-                      ("0"+(date.getDate())).slice(-2) + "T" + ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);
-        console.log(datestring);
+                      ("0"+(date.getDate())).slice(-2) + "T" + 
+                      ("0" + date.getHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2) + ':00';
+        console.log('get data: ' + datestring);
         idx = 0;
         mint = minp = minh = mini = 10000;
         maxt = maxp = maxh = maxi = 0;
         temps.length = press.length = hums.length = presns.length = itus.length = times.length = 0;
-        client_westa.publish(wtopicCmd, 'range ' + datestring);
+        var ts = new Date();
+        reqID = ts.getTime();
+        client_westa.publish(wtopicLinc, reqID + '\x01' + 'browser' + '\x01' + 'wrange' +'\x01' + datestring);
         requestdata = 1;
         }
     else if(t == 'intsel')
         {
+        var datestring1 = fromInt.toISOString().split('T')[0] + 'T00:00:00';
+        console.log(datestring1);
+        var datestring2 = toInt.toISOString().split('T')[0] + 'T00:00:00';
+        console.log(datestring2);
+        idx = 0;
+        mint = minp = minh = mini = 10000;
+        maxt = maxp = maxh = maxi = 0;
+        temps.length = press.length = hums.length = presns.length = itus.length = times.length = 0;
+        var ts = new Date();
+        reqID = ts.getTime();
+        client_westa.publish(wtopicLinc, reqID + '\x01' + 'browser' + '\x01' + 'intrange' +'\x01' + datestring1 + '\x01' + datestring2);
+        requestdata = 1;
         }
+    }
+
+function intSelChange()
+    {
+    fromInt = new Date(from.value);// + 'T00:00:00');
+    toInt = new Date(to.value);// + 'T00:00:00');
+    var t = document.querySelector('input[name="history"]:checked').value;
+    if(t == 'intsel')
+        westaGetData();
     }

@@ -45,11 +45,11 @@
         </tr>
         <tr>
             <td>
-                <input type="radio" id="time" name="history" value="tsel" onclick="enableTime()" checked>
+                <input type="radio" id="time" name="history" value="tsel" onclick="westaGetData()" checked>
                 <label for="time">durata</label>
             </td>
             <td style = "text-align: right;">
-                <select name="intName" id="timeScale" onchange="setTimeHistory()">
+                <select name="intName" id="timeScale" onchange="westaGetData()">
                     <option value="h12">12 h</option>
                     <option value="h24" selected>24 h</option>
                     <option value="h48">48 h</option>
@@ -62,16 +62,16 @@
         </tr>
         <tr>
             <td>
-                <input type="radio" id="interval" name="history" value="intsel" onclick="enableInt()">
+                <input type="radio" id="interval" name="history" value="intsel" onclick="westaGetData()">
                 <label for="interval">interval</label>
             </td>
             <td>
                 <label for="from" style="vertical-align: bottom;">de la:</label>
-                <input type="date" id="from" name="from">
+                <input type="date" id="from" name="from" onchange="intSelChange()">
             </td>
             <td>
                 <label for="to" style="vertical-align: bottom;">pana la:</label>
-                <input type="date" id="to" name="to">
+                <input type="date" id="to" name="to" onchange="intSelChange()">
             </td>
             <td></td>
         </tr>

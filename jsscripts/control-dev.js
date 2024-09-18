@@ -15,8 +15,8 @@ function enumDevices()
         clean: true,
         connectTimeout: 4000,
         // Authentication
-        username: 'c1',
-        password: 'c1',
+        username: 'browser',
+        password: 'browser',
         }
     var x = document.getElementById("devTable");
     while((nrows = x.rows.length) > 1)
