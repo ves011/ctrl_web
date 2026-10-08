@@ -2,8 +2,7 @@ var wdevName;
 const devString = "Statia meteo";
 
 var wtopicCmd;
-var wtopicLinc;
-var wtopicLincWR;
+var wtopicLinc, wtopicLincWR, wtopicLincRain;
 var wtopicState;
 var wtopicMonitor;
 var fromInt, toInt;
@@ -17,12 +16,17 @@ const presns = [];
 const hums = [];
 const times = [];
 const itus = [];
+const mmrain = [];
+const mmrain6 = [];
+const mmrain24 = [];
+
 var idx = 0;
 var requestdata = 0;
 var reqID = 0;
-var mint, maxt, minp, maxp, minh, maxh, mini, maxi, maxtp, mintp;
+var mint, maxt, minp, maxp, minh, maxh, mini, maxi, maxtp, mintp, maxrain;
 var temperatureChart = null;
 var pressureChart = null;
+var rainChart = null;
 function getWestaClient()
     {
     //const url = 'ws://proxy.gnet/ws/'; 
@@ -76,13 +80,14 @@ function processMessage(topic, payload, packet)
                 var topic = params[0] + '/';
                 wtopicCmd = topic + 'cmd';
                 wtopicLinc = 'linc/tph_range';
+                wtopicLincRain = 'linc/rain_range';
                 wtopicState = topic + 'state';
                 wtopicMonitor = topic + 'monitor';
                 wtopicLincWR = 'linc/wr';
                 client_westa.subscribe(wtopicState);
                 client_westa.subscribe(wtopicMonitor);
                 client_westa.subscribe(wtopicLincWR);
-                westaGetData();
+                westaGetData(1);
                 }
             break;
         case wtopicLincWR:
@@ -95,9 +100,12 @@ function processMessage(topic, payload, packet)
                 times[idx] = epd.getTime();
                 //times[idx] = data[1];
                 temps[idx] = data[2];
-                press[idx] = data[4];
-                presns[idx] = data[5];
-                hums[idx] = data[6];
+                press[idx] = data[3];
+                presns[idx] = data[4];
+                hums[idx] = data[5];
+                mmrain[idx] = data[6] / 1000;
+                mmrain6[idx] = data[7];
+                mmrain24[idx] = data[8];
                 itus[idx] = 0.81 * Number(temps[idx]) + 0.01 * Number(hums[idx]) * (0.99 * Number(temps[idx]) - 14.3) + 46.3;
                 if(Number(temps[idx]) > maxt)
                     maxt = Number(temps[idx]);
@@ -115,6 +123,8 @@ function processMessage(topic, payload, packet)
                     maxi = Number(itus[idx]);
                 if(Number(itus[idx]) < mini)
                     mini = Number(itus[idx]);
+                if(Number(mmrain24[idx]) > maxrain)
+                    maxrain = Number(mmrain24[idx]);
                 maxtp = (maxh > maxi)?maxh:maxi;
                 mintp = (minh < mini)?minh:mini;
                 idx++;
@@ -143,11 +153,21 @@ function processMessage(topic, payload, packet)
                     document.getElementById("ctemp").innerHTML = Number(temps[idx - 1]).toFixed(1) + ' °C ';
                     document.getElementById("cpres").innerHTML = Number(press[idx - 1]).toFixed(1) + ' mBar ';
                     document.getElementById("chum").innerHTML = Number(hums[idx - 1]).toFixed(1) + ' % ';
-                    if(requestdata == 1)
+                    if(requestdata == 1) // requested by changing interval
                         {
                         plotTemp();
                         plotPres();
+                        plotRain();
                         requestdata = 0;
+                        }
+                    else if(requestdata == 2) // requested by new monitor value
+                        {
+                        if(temperatureChart)
+                            temperatureChart.update();
+                        if(pressureChart)
+                            pressureChart.update();
+                        if(rainChart)
+                            rainChart.update();
                         }
                     }
                 reqID = 0;
@@ -170,6 +190,7 @@ function processMessage(topic, payload, packet)
             //epd = new Date(params[2]);
             if(t == 'tsel')
                 {
+                /*
                 if(idx > 1)
                     {
                     for(i = 0; i < idx - 1; i++)
@@ -181,6 +202,9 @@ function processMessage(topic, payload, packet)
                         hums[i] = hums[i + 1];
                         itus[i] = itus[i + 1];
                         times[i] = times[i + 1];
+                        //mmrain[i] = mmrain[i+1];
+                        //mmrain6[i] = mmrain6[i + 1];
+                        //mmrain24[i] = mmrain24[i + 1];
                         }
                     
                     times[idx - 1] = epd.getTime();
@@ -190,12 +214,13 @@ function processMessage(topic, payload, packet)
                     hums[idx - 1] = params[6];
                     itus[idx - 1] = 0.81 * Number(temps[idx -1]) + 0.01 * Number(hums[idx -1]) * (0.99 * Number(temps[idx - 1]) - 14.3) + 46.3;
                     
-                    //plotTemp();
                     if(temperatureChart)
                         temperatureChart.update();
                     if(pressureChart)
                         pressureChart.update();
                     }
+                */
+                westaGetData(2);
                 }
             break;
         default:
@@ -305,7 +330,7 @@ function plotPres()
     const ctx = document.getElementById('presChart');
     const config = {
     type: "line",
-    stacked: false,
+    stacked: true,
     data: {
         labels: times,
         datasets: [
@@ -313,7 +338,9 @@ function plotPres()
             data: press, // Set initially to empty data
             label: "Presiunea atmosferica",
             borderColor: "#dd8800",
-            fill: false
+            fill: false,
+            lineTension: 0.4,  
+            yAxisID: "y"
             },
             {
             data: presns, // Set initially to empty data
@@ -321,8 +348,57 @@ function plotPres()
             borderColor: "#46c1fa",
             fill: false,
             pointRadius: 1,
-            pointHoverRadius: 1
+            pointHoverRadius: 1,
+            lineTension: 0.4,  
+            yAxisID: "y"
             }
+            /*
+            {
+            type: 'bar',
+            data: mmrain, // Set initially to empty data
+            label: "Precipitatii",
+            backgroundColor: ["#4ea5cd"],
+            barPercentage: 1.2,
+            //barThickness: 'flex',
+            fill: false,
+            pointRadius: 1,
+            pointHoverRadius: 1,
+            //lineTension: 0.4,  
+            yAxisID: "y1",
+            options:
+                {
+                y:
+                    {
+                    beginAtZero: true
+                    }
+                }
+            },
+            {
+            //type: 'bar',
+            data: mmrain6, // Set initially to empty data
+            label: "Precipitatii / 6h",
+            borderColor: "#f379e9",
+            barPercentage: 1,
+            //barThickness: 'flex',
+            fill: 'origin',
+            pointRadius: 1,
+            pointHoverRadius: 1,
+            //lineTension: 0.4,  
+            yAxisID: "y1"
+            },
+            {
+            //type: 'bar',
+            data: mmrain24, // Set initially to empty data
+            label: "Precipitatii / 24h",
+            borderColor: "#0000ff",
+            barPercentage: 1,
+            //barThickness: 'flex',
+            fill: 'origin',
+            pointRadius: 1,
+            pointHoverRadius: 1,
+            //lineTension: 0.4,  
+            yAxisID: "y1"
+            }*/
             ]
     },
     options: {
@@ -363,12 +439,12 @@ function plotPres()
                 },
             y1:
                 {
-                border:{display: true, width: 3, color: '#fff'},
+                border:{display: true, width: 3, color: '#000'},
                 position: 'right',
-                title: {display: true, text: "  ", font: {size: 14, weight: "bold"}},
+                title: {display: true, text: "mBar", font: {size: 14, weight: "bold"}, color: '#fff'},
                 grid: {drawOnChartArea: false}, // only want the grid lines for one axis to show up
-                suggestedMax: maxtp + 5 ,
-                suggestedMin: mintp - 5,
+                suggestedMax: 90,
+                suggestedMin: 0,
                 ticks:{color: '#fff'}
                 }
             }
@@ -379,16 +455,130 @@ function plotPres()
     pressureChart = new Chart(ctx, config);
     }
 
+function plotRain()
+    {
+    const ctx = document.getElementById('rainChart');
+    const config = {
+    type: "line",
+    stacked: true,
+    data: {
+        labels: times,
+        datasets: [
+            {
+            type: 'bar',
+            data: mmrain, // Set initially to empty data
+            label: "Precipitatii",
+            backgroundColor: ["#4ea5cd"],
+            barPercentage: 1.2,
+            //barThickness: 'flex',
+            fill: false,
+            pointRadius: 1,
+            pointHoverRadius: 1,
+            //lineTension: 0.4,  
+            yAxisID: "y",
+            options:
+                {
+                y:
+                    {
+                    beginAtZero: true
+                    }
+                }
+            },
+            {
+            //type: 'bar',
+            data: mmrain6, // Set initially to empty data
+            label: "total / 6h",
+            borderColor: "#f379e9",
+            barPercentage: 1,
+            //barThickness: 'flex',
+            fill: 'origin',
+            pointRadius: 1,
+            pointHoverRadius: 1,
+            //lineTension: 0.4,  
+            yAxisID: "y"
+            },
+            {
+            //type: 'bar',
+            data: mmrain24, // Set initially to empty data
+            label: "total / 24h",
+            borderColor: "#0000ff",
+            barPercentage: 1,
+            //barThickness: 'flex',
+            fill: 'origin',
+            pointRadius: 1,
+            pointHoverRadius: 1,
+            //lineTension: 0.4,  
+            yAxisID: "y"
+            }
+            ]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins:
+            {
+            legend: 
+                {
+                labels: 
+                    {
+                    boxHeight: 1,
+                    font: {Family: "'Verdana', sans-serif", size: 16, weight: "bold"}
+                    }
+                }
+            },
+        scales: 
+            {
+            x: 
+                {
+                type: "time",
+                border:{display: true, width: 3, color: '#000'},
+                grid: {display: true},
+                ticks:{autoskip: true},
+                time: 
+                    {
+                    unit: "hour",
+                    displayFormats: {"hour": "MMM-dd HH:mm"}
+                    }
+                },
+            y:
+                {
+                border:{display: true, width: 3, color: '#000'},
+                position: 'left',
+                grid: {display: true},
+                title: {display: true, text: "l / mp", font: {size: 14, weight: "bold"}},
+                suggestedMax: maxrain + maxrain / 20 ,
+                suggestedMin: 0,
+                ticks:{color: '#000'}
+                },
+            y1:
+                {
+                border:{display: true, width: 3, color: '#000'},
+                grid: {drawOnChartArea: false}, // only want the grid lines for one axis to show up
+                position: 'right',
+                title: {display: true, text: "%", font: {size: 14, weight: "bold"}, color: '#fff'},
+                suggestedMax: 90,
+                suggestedMin: 0,
+                ticks:{color: '#fff'}
+                }
+            }
+        }
+    };
+    if(rainChart)
+        rainChart.destroy();
+    rainChart = new Chart(ctx, config);
+    }
+
 function enableTime()
     {
-    westaGetData();
+    westaGetData(1);
     }
 function enableInt()
     {
+	westaGetData(1);
     }
 
 
-function westaGetData()
+function westaGetData(reqType)
     {
     var t = document.querySelector('input[name="history"]:checked').value;
     if(t == 'tsel')
@@ -427,12 +617,12 @@ function westaGetData()
         console.log('get data: ' + datestring);
         idx = 0;
         mint = minp = minh = mini = 10000;
-        maxt = maxp = maxh = maxi = 0;
+        maxt = maxp = maxh = maxi = maxrain = 0;
         temps.length = press.length = hums.length = presns.length = itus.length = times.length = 0;
         var ts = new Date();
         reqID = ts.getTime();
         client_westa.publish(wtopicLinc, reqID + '\x01' + 'browser' + '\x01' + 'wrange' +'\x01' + datestring);
-        requestdata = 1;
+        requestdata = reqType;
         }
     else if(t == 'intsel')
         {
@@ -442,12 +632,12 @@ function westaGetData()
         console.log(datestring2);
         idx = 0;
         mint = minp = minh = mini = 10000;
-        maxt = maxp = maxh = maxi = 0;
+        maxt = maxp = maxh = maxi = maxrain = 0;
         temps.length = press.length = hums.length = presns.length = itus.length = times.length = 0;
         var ts = new Date();
         reqID = ts.getTime();
         client_westa.publish(wtopicLinc, reqID + '\x01' + 'browser' + '\x01' + 'intrange' +'\x01' + datestring1 + '\x01' + datestring2);
-        requestdata = 1;
+        requestdata = reqType;
         }
     }
 
@@ -457,5 +647,11 @@ function intSelChange()
     toInt = new Date(to.value);// + 'T00:00:00');
     var t = document.querySelector('input[name="history"]:checked').value;
     if(t == 'intsel')
-        westaGetData();
+        westaGetData(1);
+    }
+function tselChange()
+    {
+    var t = document.querySelector('input[name="history"]:checked').value;
+    if(t == 'tsel')
+        westaGetData(1);
     }

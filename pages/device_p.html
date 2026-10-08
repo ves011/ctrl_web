@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Preparing device</title>
+  <script src="https://unpkg.com/mqtt@5.5.5/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <p id="status">Sending OTA boot command…</p>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const ip = params.get("ip");
+    const id = params.get("id");
+
+    if (!ip || !id) 
+        {
+        document.getElementById("status").textContent =
+        "Missing device IP or ID.";
+        } 
+    else 
+        {
+        const client = mqtt.connect("wss://proxy.gnet/wss/", 
+            {
+            clean: true,
+            connectTimeout: 4000,
+            username: "browser",
+            password: "browser"
+            });
+
+        client.on("connect", () => 
+            {
+            // Replace topic and payload with the format your devices expect.
+            //client.publish(`${iot.shortName}/ctrl`, "boot ota_1", { qos: 1 });
+            //client.publish(`${iot.shortName}/ctrl`, "restart", { qos: 1 });
+            client.publish(`${id}/ctrl`, "boot ota_1", { qos: 1 },
+                error => {if (error) 
+                    {
+                    document.getElementById("status").textContent = "Could not send the command.";
+                    client.end();
+                    return;
+                    }
+                });
+            client.publish(`${id}/ctrl`, "restart", { qos: 1 },
+                error => {if (error) 
+                    {
+                    document.getElementById("status").textContent = "Could not send the command.";
+                    client.end();
+                    return;
+                    }
+                client.end(false, () => {location.replace(`http://${ip}/`);}); 
+                });
+            });
+
+        client.on("error", error => 
+            { 
+            document.getElementById("status").textContent = "Could not connect to MQTT.";
+            console.error(error);
+            client.end();
+            });
+        }
+  </script>
+</body>
+</html>

@@ -20,7 +20,6 @@ var watering_status = -1;
 var active_dv = -1;
 var active_no = -1;
 var color_idx = true;
-var dvop_inprogress = 0;
 var devip;
 
 const ONLINE = 2;
@@ -108,11 +107,12 @@ function processMessage(topic, payload, packet)
             break;
         case ptopicState:
             document.getElementById("minP").innerHTML = params[8];
-            document.getElementById("maxP").innerHTML = params[9];
+            //document.getElementById("maxP").innerHTML = params[9];
             document.getElementById("pkpa").innerHTML = params[6];
             document.getElementById("current").innerHTML = Number(params[5]/1000).toFixed(2);
-            document.getElementById("qmeter").innerHTML = params[13];
-            document.getElementById("total_water").innerHTML = Number(params[14] / 1000000).toFixed(2);
+            document.getElementById("maxCurrent").innerHTML = Number(params[9]/1000).toFixed(2);
+            document.getElementById("qmeter").innerHTML = params[10];
+            document.getElementById("total_water").innerHTML = Number(params[11]).toFixed(2);
             updatePumpUI(params[3], params[4]);
             break;
         case ptopicState_a:
@@ -149,14 +149,13 @@ function processMessage(topic, payload, packet)
             document.getElementById("pkpa").innerHTML = pump_mon.pres_kpa;
             document.getElementById("current").innerHTML = Number(pump_mon.current/1000).toFixed(2);
             document.getElementById("qmeter").innerHTML = pump_mon.debit;
-            document.getElementById("total_water").innerHTML = Number(pump_mon.total_qwater/1000).toFixed(2);
+            document.getElementById("total_water").innerHTML = Number(pump_mon.total_qwater).toFixed(2);
             updatePumpUI(pump_mon.state, pump_mon.status);
             break;
         case ptopicMonitor_a:
             switch(params[2])
                 {
                 case 'dvop':
-                    if(dvop_inprogress == 2)
                     st = document.getElementById("state" + params[3]);
                     if(st.style.backgroundColor == "white")
                         st.style.backgroundColor = "grey";
@@ -186,7 +185,6 @@ function processMessage(topic, payload, packet)
                         st.style.color = "blue";
                         st.innerHTML = 'inchis';
                         }
-                    dvop_inprogress = 2;
                     break;
                 }
             break;

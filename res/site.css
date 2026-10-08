@@ -243,14 +243,35 @@
 		opacity: 1;
 		}
 	.brefresh:active {box-shadow: 0 0;}
+
+    .bsettings
+		{
+		display: inline-block;
+		width: 26px;
+    	height: 24px;
+    	padding: 0px;
+    	margin: 2px;
+    	vertical-align: center;
+		cursor: pointer;
+		border: none;
+		background-repeat: no-repeat;
+		border-radius: 5px;
+  		box-shadow: 5px 5px #000;
+		background-image: url("icons8-settings-50-up.png");
+		background-size: 26px 24px;	
+		background-repeat: no-repeat;
+		opacity: 1;
+		}
+	.bsettings:active {box-shadow: 0 0;}
+/*
 	.bsettings
 		{
         position: absolute;
 		display: inline-block;
         top: 10px;
         left: 325px;
-		width: 50px;
-    	height: 30px;
+		width: 26px;
+    	height: 24px;
     	padding: 0px;
     	margin: 2px;
     	vertical-align: center;
@@ -261,11 +282,11 @@
 		border-radius: 5px;
   		box-shadow: 5px 5px #999;
         background-image: url("../res/icons8-settings-50-up.png");
-        background-size: 25px 25px;
+        background-size: 26px 24px;
 		}
     .bsettings:active 	{background-image: url("../res/icons8-settings-250-down.png"); 		background-color: #869dbe; 	box-shadow: 5px 5px #c0c0c0;}
     .bsettings_disabled	{background-image: url("../res/icons8-settings-50-disabled.png"); 	background-color: #d6d4d4;	pointer-events: none;}
-    
+  */  
     .button 
         {
         position: absolute;

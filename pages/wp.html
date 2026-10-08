@@ -50,7 +50,7 @@
     <script type="text/javascript" src="../jsscripts/showzone.js"></script>
     <title>Pompa Foraj</title>
 </head>
-<body onload="getPumpClient()" onbeforeunload="clean_connection()"> 
+<body onload="getPumpClient()"> 
     <button id = "back" class = "back" onclick="location.href='../index.html'"></button>
     <div id = "comerror" class = "comdiv"></div>
     <!--<bsettings id = "settings" class = "bsettings" onclick="gotoSettings()"></bsettings> -->
@@ -93,7 +93,7 @@
                     <td class="left_col">Curent (A)</td>
                     <td class="val_col"></td>
                     <td id = "current" class="val_col"></td>
-                    <td class="val_col"></td>
+                    <td id = "maxCurrent" class="val_col"></td>
                 </tr>
                 <tr>
                     <td class="left_col">Debit (l/min)</td>
@@ -132,7 +132,7 @@
 					<td id = "start00" style = "width: 70px;"></td>
 					<td id = "stop00" style = "width: 70px;"></td>
 					<td id = "qwater00" style = "width: 70px;"></td>
-					<td id = "pstate00" style = "width: 40px;"></td>
+					<td id = "pstate00" style = "width: 50px;"></td>
                 </tr>
                 <tr>
 					<td>p2</td>
@@ -194,7 +194,6 @@
 					<td id = "pstate30"></td>
                 </tr>
                 <tr>
-
 					<td>p2</td>
 					<td id = "start31"></td>
 					<td id = "stop31"></td>

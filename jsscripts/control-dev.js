@@ -76,7 +76,7 @@ function processMessage(topic, payload, packet)
                     strdest = 'water.html';
                 else if(iot.shortName.indexOf("wp") >= 0)
                     strdest = 'wp.html';
-                if(strdest != "");
+                if(strdest.length > 0)
                     {
                     str += strdest;  
                     str += "?ip=";

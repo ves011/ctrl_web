@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../res/site.css">
+<link rel="icon" href="data:,">
+<style> 
+	table {border-collapse: collapse;width: 100%; font-family: sans-serif;}
+	td, th {text-align: left; font-family: sans-serif; font-size:14px;}
+	tr {border-bottom: 3px solid #ddd;}
+	caption {text-align: left;}
+	body {font-family: sans-serif;}
+
+    .provision-link 
+        {
+        display: inline-block;
+        padding: 2px 2px;
+        color: #245b83;
+        background: #eef5fa;
+        border: 1px solid #a8c3d6;
+        border-radius: 4px;
+        text-decoration: none;
+        }
+
+    .provision-link:hover {background: #dcecf6;}
+    #devTable th,
+    #devTable td {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  line-height: 1.2;
+}
+</style>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://unpkg.com/mqtt@5.5.5/dist/mqtt.min.js"></script>
+<script type="text/javascript" src="../jsscripts/admin.js"></script>
+
+
+
+<title>IoT Network</title>
+</head>
+<body  onLoad="enumAllDevices()">
+    <button id = "back", class = "back" onclick="location.href='../index.html'"></button>
+    <div id = "comerror" class = "comdiv"></div>
+    <div id = "comstatus" class = "comdiv"></div>
+    <div class = "hdiv" style = "left: 20px; width: auto;">
+        <table id="devTable">
+            <caption style="color: white; background-color: Gray; font-size:30px; font-family:sans-serif">
+                <b>Device provisioning</b>
+            </caption>
+            <tr> 
+                <th style = "font-size:20px; width:auto; text-align: center">ID</th>
+                <th style = "font-size:20px; width:30px; text-align: center"></th>
+                <th style = "font-size:20px; width:auto; text-align: center">Name</th>
+                <th style = "font-size:20px; width:30px; text-align: center"></th>
+                <th style = "font-size:20px; width:auto; text-align: center">IP</th>
+                <th style = "font-size:20px; width:30px; text-align: center"></th>
+                <th style = "font-size:20px; width:auto; text-align: center"></th>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

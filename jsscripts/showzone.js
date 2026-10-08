@@ -250,8 +250,8 @@ function resetProg(no)
             new_cs = dv_program[i].cs;
             if(dv_program[i].cs == 0) // program reset 
                 new_cs = 7; // it goes to skip
-            else if(dv_program[i].cs == 1)
-                alert("Starea nu poate fi schimbata cand udarea este activa");
+            //else if(dv_program[i].cs == 1)
+            //    alert("Starea nu poate fi schimbata cand udarea este activa");
             else if(dv_program[i].cs == 6)
                 {
                 if(dv_program[i].start >= dv_program[i].stop)

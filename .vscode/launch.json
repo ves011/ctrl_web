@@ -9,43 +9,6 @@
             "request":"launch",
             "url": "https://proxy.gnet:442",
             "name": "index"
-        }
-        {
-            "type":"chrome",
-            "request":"launch",
-            "url": "https://proxy.gnet/pages/water.html",
-            "name":"water"
         },
-        {
-            "type":"chrome",
-            "request":"launch",
-            "url": "https://proxy.gnet/pages/westa.html",
-            "name":"westa"
-        },
-        
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "ctrl-web",
-            "url": "https://proxy.gnet:443"
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "agate.html",
-            "url": "https://proxy.gnet/pages/agate.html"
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "pump.html",
-            "url": "https://proxy.gnet/pages/pump.html"
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "psettings.html",
-            "url": "https://proxy.gnet/pages/pumpsettings.html"
-        }
     ]
 }

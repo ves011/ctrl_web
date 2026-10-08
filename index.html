@@ -9,8 +9,24 @@
 	table {border-collapse: collapse;width: 100%; font-family: sans-serif;}
 	td, th {text-align: left; font-family: sans-serif; font-size:14px;}
 	tr {border-bottom: 3px solid #ddd;}
-	caption {text-align: left;}
 	body {font-family: sans-serif;}
+	
+	caption {text-align: left;}
+
+	.caption-content 
+		{
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		}
+
+	.caption-left 
+		{
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		}
 </style>
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -25,12 +41,16 @@
 <body  onLoad="enumDevices()">
 	<table id="devTable">
 		<caption style="color: white; background-color: Gray; font-size:30px; font-family:sans-serif">
-			<b>IoT Devices</b>
-			<span></span>  
-			<button id = "refresh"  class = "brefresh" onclick = "enumDevices()"></button>
+  			<div class="caption-content">
+    			<span class="caption-left">
+      				<b>IoT Devices</b>
+      				<button id = "refresh"  class = "brefresh" onclick = "enumDevices()"></button>
+    			</span>
+    			<button id = "settings"  class = "bsettings" onclick = "location.href='./pages/admin.html'"></button>
+  			</div>
 		</caption>
 		<tr> 
-			<th style = "width:20px"></th>
+			<th style = "width:20px;"></th>
 			<th style = "width:150px">Device</th>
 			<th>IP</th>
 		</tr>

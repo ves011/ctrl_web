@@ -38,6 +38,9 @@
 <div class="chart-container" style="position: relative; height:300px; width:90vw">
   <canvas id="presChart"></canvas>
 </div>
+<div class="chart-container" style="position: relative; height:300px; width:90vw">
+  <canvas id="rainChart"></canvas>
+</div>
 <div style="position: relative; height:200px; width:90vw; font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 12px;">
     <table>
         <tr>
@@ -45,11 +48,11 @@
         </tr>
         <tr>
             <td>
-                <input type="radio" id="time" name="history" value="tsel" onclick="westaGetData()" checked>
+                <input type="radio" id="time" name="history" value="tsel" onclick="westaGetData(1)" checked>
                 <label for="time">durata</label>
             </td>
             <td style = "text-align: right;">
-                <select name="intName" id="timeScale" onchange="westaGetData()">
+                <select name="intName" id="timeScale" onchange="tselChange()">
                     <option value="h12">12 h</option>
                     <option value="h24" selected>24 h</option>
                     <option value="h48">48 h</option>
@@ -62,7 +65,7 @@
         </tr>
         <tr>
             <td>
-                <input type="radio" id="interval" name="history" value="intsel" onclick="westaGetData()">
+                <input type="radio" id="interval" name="history" value="intsel" onclick="westaGetData(1)">
                 <label for="interval">interval</label>
             </td>
             <td>
