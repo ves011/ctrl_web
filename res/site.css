@@ -31,7 +31,8 @@
 	
 	.back
 		{
-		display: inline-block;
+		/*display: inline-block;*/
+        display:flex;
 		position: absolute;
 		top: 10px;
         left: 5px;

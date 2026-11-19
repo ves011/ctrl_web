@@ -44,13 +44,14 @@ function enumAllDevices()
 function processMessage(topic, payload, packet)
     {
     b = String.fromCharCode(...payload);
+    b += '\1';
     console.log('Message from server ', topic + ': ' + b);
     params = b.split('\1')
     var x = document.getElementById("devTable");;
     switch(topic)
         {
         case 'gnetdev/response':
-            const iot = {shortName: params[0], longName: params[1], ip: params[2]};
+            const iot = {shortName: params[0], longName: params[1], id: params[2], ip: params[2], project: params[6], version: params[7], buildd: params[8], buildt: params[9]};
             for(i = 0; i < nDevices; i++)
                 {
                 if(iotList[i].shortName == iot.shortName)
@@ -66,16 +67,25 @@ function processMessage(topic, payload, packet)
                     }
                 iotList[nDevices] = iot;
                 var r = x.insertRow(insertAt);
-                var x = r.insertCell(0);
+                var shortName = r.insertCell(0);
                 r.insertCell(1);
-                var y = r.insertCell(2);
+                var longName = r.insertCell(2);
                 r.insertCell(3);
-                var z = r.insertCell(4);
+                var ip = r.insertCell(4);
                 r.insertCell(5);
-                var w = r.insertCell(6);
-                x.innerHTML = iot.shortName;
-                y.innerHTML = iot.longName;
-                z.innerHTML = iot.ip;
+                var project = r.insertCell(6);
+                r.insertCell(7);
+                var version = r.insertCell(8);
+                r.insertCell(9);
+                var build = r.insertCell(10);
+                r.insertCell(11);
+                var linkcell = r.insertCell(12);
+                shortName.innerHTML = iot.shortName;
+                longName.innerHTML = iot.longName;
+                ip.innerHTML = iot.ip;
+                project.innerHTML = iot.project;
+                version.innerHTML = iot.version;
+                build.innerHTML = iot.buildd + " / " + iot.buildt;
                 //w.innerHTML = "goto provisioning";
 
                 const link = document.createElement("a");
@@ -107,7 +117,7 @@ function processMessage(topic, payload, packet)
                     window.open(`http://${iot.ip}/`, "_blank");
                     });
                 */
-                w.appendChild(link);
+                linkcell.appendChild(link);
               
                 nDevices++;
                 }

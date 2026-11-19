@@ -1,0 +1,134 @@
+/* Thermostat cards sit above the blue markers in floor-plan.png. */
+.plan-hotspot {
+  width: 100px;
+  min-width: 100px;
+  transform: translate(-50%, calc(-100% - 11px));
+}
+.plan-hotspot[data-side="before"] {
+  transform: translate(-100%, calc(-100% - 11px));
+}
+.plan-hotspot[data-side="after"] {
+  transform: translate(0, calc(-100% - 11px));
+}
+.plan-hotspot::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 7px;
+  bottom: -7px;
+  left: calc(50% - 6px);
+  background: rgba(255, 255, 255, .96);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.plan-hotspot[data-side="before"]::after { left: auto; right: 8px; }
+.plan-hotspot[data-side="after"]::after { left: 8px; }
+.plan-hotspot:hover,
+.plan-hotspot:focus-visible {
+  transform: translate(-50%, calc(-100% - 11px)) scale(1.04);
+}
+.plan-hotspot[data-side="before"]:hover,
+.plan-hotspot[data-side="before"]:focus-visible {
+  transform: translate(-100%, calc(-100% - 11px)) scale(1.04);
+}
+.plan-hotspot[data-side="after"]:hover,
+.plan-hotspot[data-side="after"]:focus-visible {
+  transform: translate(0, calc(-100% - 11px)) scale(1.04);
+}
+.plan-hotspot[data-side="below"] {
+  transform: translate(-50%, 11px);
+}
+.plan-hotspot[data-side="below"]::after {
+  top: -7px;
+  bottom: auto;
+  transform: rotate(180deg);
+}
+.plan-hotspot[data-side="below"]:hover,
+.plan-hotspot[data-side="below"]:focus-visible {
+  transform: translate(-50%, 11px) scale(1.04);
+}
+@media (max-width: 760px) {
+  .plan-hotspot { width: 78px; min-width: 78px; padding: 5px; }
+  .hotspot-room { font-size: 6px; }
+  .hotspot-reading { font-size: 12px; }
+  .hotspot-target {
+    font-size: 6px;
+    gap: 2px;
+    margin-top: 3px;
+    padding-top: 3px;
+  }
+  .hotspot-target b { font-size: 7px; }
+}
+
+.modal-chart {
+  margin-top: 18px;
+  padding: 14px;
+  text-align: left;
+}
+
+.modal-chart .chart-legend {
+  margin-top: 10px;
+}
+
+.modal-chart .chart-wrap {
+  height: 108px;
+}
+
+.modal-chart .x-labels {
+  padding-top: 3px;
+}
+
+@media (max-width: 760px) {
+  .modal {
+    padding: 22px 15px;
+  }
+
+  .modal-chart {
+    padding: 11px 9px;
+  }
+}
+
+@media (min-width: 1360px) and (min-height: 700px) {
+  .main-content {
+    padding-bottom: 10px;
+  }
+
+  .topbar {
+    height: 54px;
+  }
+
+  .page-heading {
+    padding: 16px 0 12px;
+  }
+
+  .page-heading h1 {
+    font-size: 26px;
+  }
+
+  .summary-card {
+    min-height: 76px;
+    padding: 11px 16px;
+  }
+
+  .section-title-row {
+    margin: 16px 0 8px;
+  }
+
+  .floorplan-toolbar {
+    height: 40px;
+  }
+
+  .plan-canvas {
+    max-width: 800px;
+  }
+
+  .plan-legend {
+    height: 26px;
+  }
+
+  .main-content footer {
+    margin-top: 8px;
+  }
+}
+.plan-hotspot.is-heating {
+  background-color: #f8e8e7;
+}

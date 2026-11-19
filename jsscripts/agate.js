@@ -1,6 +1,5 @@
 var gdevName;
 const gdevString = "Poarta Auto";
-var gtopicCmd;
 var gtopicState;
 var gtopicMonitor;
 var gtopicCtrl;
@@ -91,13 +90,12 @@ function processMessage(topic, payload, packet)
                 {
                 gdevName = params[1];
                 var topic = params[0] + '/';
-                gtopicCmd = topic + 'cmd';
                 gtopicState = topic + 'state';
                 gtopicMonitor = topic + 'monitor';
                 gtopicCtrl = topic + 'ctrl';
                 gclient.subscribe(gtopicState);
                 gclient.subscribe(gtopicMonitor);
-                gclient.publish(gtopicCmd, 'state');
+                gclient.publish(gtopicCtrl, 'gate state');
                 //runScript();
                 }
             break;
@@ -119,18 +117,18 @@ function openfullClick()
         {
         if(gate_state == STATE_OPEN)
             {
-            gclient.publish(gtopicCmd, "close");
+            gclient.publish(gtopicCtrl, "gate close");
             cmd_sel = CMD_FULL;
             }
         else
             {
-            gclient.publish(gtopicCmd, "open");
+            gclient.publish(gtopicCtrl, "gate open");
             cmd_sel = CMD_FULL;
             }
         }
     else
         {
-        gclient.publish(gtopicCmd, "open");
+        gclient.publish(gtopicCtrl, "gate open");
         cmd_sel = CMD_FULL;
         }
     }
@@ -138,14 +136,14 @@ function openpedClick()
     {
     if(cmd_sel == CMD_PED && moving_state == STEADY_STATE && gate_state == STATE_OPEN)
         {
-        gclient.publish(gtopicCmd, "close");
+        gclient.publish(gtopicCtrl, "gate close");
         }
     else
         {
         cmd_sel = 0;
         if(moving_state == STEADY_STATE && gate_state == STATE_CLOSED)
             {
-            gclient.publish(gtopicCmd, "openped");
+            gclient.publish(gtopicCtrl, "gate openped");
             cmd_sel = CMD_PED;
             }
         else
