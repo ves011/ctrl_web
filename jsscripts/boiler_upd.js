@@ -40,27 +40,51 @@ const VIESSMANN_CODES = {
     'F.355': 'Flame loss during operation',
     'F.357': 'Gas valve / burner control fault'
 };
+const messageSources = [
+    { key: 'device.messages.service.raw', type: 'service' },
+    { key: 'device.messages.info.raw',    type: 'info' },
+    { key: 'device.messages.status.raw',  type: 'status' }
+    ];
+const messageCategories = [
+    { key: 'device.messages.service.raw', type: 'service', title: 'Service' },
+    { key: 'device.messages.info.raw',    type: 'info',    title: 'Info' },
+    { key: 'device.messages.status.raw',  type: 'status',  title: 'Status' }
+    ];
+function describeCode(rawCode) 
+    {
+    if (!rawCode) return '';
+    if (VIESSMANN_CODES[rawCode]) return VIESSMANN_CODES[rawCode];
 
+    // Fallback prefix classification for unlisted codes
+    if (rawCode.startsWith('S.')) return 'Operating state';
+    if (rawCode.startsWith('I.')) return 'Information notice';
+    if (rawCode.startsWith('P.')) return 'Maintenance reminder';
+    if (rawCode.startsWith('F.')) return 'System fault (check boiler)';
+    return '';
+    }
 function ts2str(rawTimestampStr) 
     {
     var date = new Date(rawTimestampStr);
     return date.toLocaleDateString("ro-RO", {year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric"})
-/*        
-    if (!rawTimestampStr || rawTimestampStr.length < 16) 
-        return "";
-    const datePart = rawTimestampStr.slice(0, 10);
-    const timePart = rawTimestampStr.slice(11, 16);
-    return `${datePart} / ${timePart}`;
-*/    
+    }
+function setCommState(isOnline) 
+    {
+    const badge = document.getElementById('comm-state');
+    if (!badge) return;
+
+    badge.textContent = isOnline ? 'Online' : 'Offline';
+    badge.classList.toggle('is-online', isOnline);
+    badge.classList.toggle('is-offline', !isOnline);
     }
 function updateBoilerPage(payload)
     {
     const fields = payload.split(separator);
+    const fragment = document.createDocumentFragment();
     const [, , mqtt_payload] = fields;
     const list = document.querySelector('#boiler-messages');
     let features;
     let node;
-    
+
     try {features = JSON.parse(mqtt_payload);}
     catch
         {
@@ -68,67 +92,88 @@ function updateBoilerPage(payload)
         { className: 'message-empty', textContent: 'Could not read boiler message data.' }));
         return;
         }
+
+    if(features?.viErrorId)
+        {
+        //if (features.statusCode === 400 || features.extendedPayload?.reason === 'DEVICE_OFFLINE') 
+            setCommState(false);
+        //else 
+            {
+            // Optional: handle other API errors (e.g., 401 token error or 429 rate limit)
+            console.warn('Viessmann API error:', features.statusCode, features.errorType);
+            }
+        return; 
+        }
+    setCommState(true);
+
     
-    node = features['device.messages.status.raw'];
-    if(node && node.isReady)
+    // 1. Initialize the 3 category containers once on first run
+    if (list.children.length === 0) 
         {
-        const messages = node.properties.entries.value;
-        if (!Array.isArray(messages) || messages.length === 0)
+        const initFrag = document.createDocumentFragment();
+        for (const cat of messageCategories) 
             {
-            list.replaceChildren(Object.assign(document.createElement('p'),
-                { className: 'message-empty', textContent: 'No current status messages.' }));
+            const group = document.createElement('div');
+            group.classList.add('message-group', `message-group-${cat.type}`);
+            group.dataset.category = cat.type;
+            const heading = document.createElement('h3');
+            heading.classList.add('message-group-title', `message-${cat.type}`);
+            heading.textContent = `${cat.title} (0)`;
+            group.append(heading);
+            initFrag.append(group);
             }
-        else
+        list.replaceChildren(initFrag);
+        }
+    for (const cat of messageCategories) 
+        {
+        if (!Object.prototype.hasOwnProperty.call(features, cat.key))
+            continue; // Feature did not change -> leave existing DOM untouched
+
+        const node = features[cat.key];
+        const entries = (node && node.isReady && Array.isArray(node.properties?.entries?.value))
+            ? [...node.properties.entries.value] : [];
+
+        // Sort newest first within each category
+        entries.sort((a, b) => Date.parse(b.timestamp || 0) - Date.parse(a.timestamp || 0));
+
+        const group = list.querySelector(`.message-group-${cat.type}`);
+        if (!group) 
+            continue;
+
+        const groupFrag = document.createDocumentFragment();
+        const heading = document.createElement('h3');
+        heading.classList.add('message-group-title', `message-${cat.type}`);
+        heading.textContent = `${cat.title} (${entries.length})`;
+        groupFrag.append(heading);
+
+        for (const message of entries) 
             {
-            const fragment = document.createDocumentFragment();
-            for (const message of messages)
+            const row = document.createElement('article');
+            row.classList.add('message-row', `message-${cat.type}`);
+
+            const code = document.createElement('strong');
+            code.textContent = (message.errorCode || 'MSG').trim();
+
+            const desc = document.createElement('span');
+            desc.className = 'message-desc';
+            desc.textContent = describeCode(message.errorCode);
+
+            const time = document.createElement('time');
+            const timestamp = Date.parse(message.timestamp || '');
+            if (Number.isFinite(timestamp)) 
                 {
-                const row = document.createElement('article');
-                row.classList.add("message-row");
-                const code = document.createElement('strong');
-                code.textContent = message.errorCode || 'Status message';
-                const time = document.createElement('time');
-                const ts = message.timestamp.endsWith('Z') ? message.timestamp.slice(0, -1) : message.timestamp;
-                const timestamp = Date.parse(ts || '');
-                if (Number.isFinite(timestamp))
-                    {
-                    time.dateTime = new Date(timestamp).toISOString();
-                    time.textContent = new Date(timestamp).toLocaleString("ro-RO",
-                        { dateStyle: 'medium', timeStyle: 'medium' });
-                    }
-                else
-                    time.textContent = '--';
-                row.append(code, time);
-                fragment.append(row);
+                time.dateTime = new Date(timestamp).toISOString();
+                time.textContent = new Date(timestamp).toLocaleString('ro-RO', {dateStyle: 'medium', timeStyle: 'medium'});
                 }
-            list.replaceChildren(fragment);
+            else
+                time.textContent = '--';
+
+            row.append(code, desc, time);
+            groupFrag.append(row);
             }
+        group.replaceChildren(groupFrag);
         }
-        
-    node = features['device.lock.malfunction'];
-    if(node && node.isReady)
-        {
-        const fragment = document.createDocumentFragment();
-        const bm = document.querySelector('#lock-messages');
-        const row = document.createElement('article');
-        row.classList.add("message-row");
-        const code = document.createElement('strong');
-        code.textContent = 'Lock state: ' + node.properties.active.value;
-        const time = document.createElement('time');
-        const ts = node.timestamp.endsWith('Z') ? node.timestamp.slice(0, -1) : node.timestamp;
-        const timestamp = Date.parse(ts || '');
-        if (Number.isFinite(timestamp))
-            {
-            time.dateTime = new Date(timestamp).toISOString();
-            time.textContent = new Date(timestamp).toLocaleString("ro-RO",
-                { dateStyle: 'medium', timeStyle: 'medium' });
-            }
-        else
-            time.textContent = '--';
-        row.append(code, time);
-        fragment.append(row);
-        bm.replaceChildren(fragment);
-        }
+
     node = features['heating.sensors.pressure.supply'];
     if(node && node.isReady)
         {
@@ -227,9 +272,7 @@ function updateBoilerPage(payload)
         document.getElementById("gh_td").innerHTML = node.properties.currentDay.value;
         document.getElementById("gh_7d").innerHTML = node.properties.lastSevenDays.value;
         document.getElementById("gh_cm").innerHTML = node.properties.currentMonth.value;
-        //document.getElementById("gh_pm").innerHTML = node.properties.lastMonth.value;
         document.getElementById("gh_cy").innerHTML = node.properties.currentYear.value;
-        //document.getElementById("gh_py").innerHTML = node.properties.lastYear.value;
         }
     node = features['heating.gas.consumption.summary.dhw'];
     if(node && node.isReady)
@@ -237,9 +280,7 @@ function updateBoilerPage(payload)
         document.getElementById("gd_td").innerHTML = node.properties.currentDay.value;
         document.getElementById("gd_7d").innerHTML = node.properties.lastSevenDays.value;
         document.getElementById("gd_cm").innerHTML = node.properties.currentMonth.value;
-        //document.getElementById("gd_pm").innerHTML = node.properties.lastMonth.value;
         document.getElementById("gd_cy").innerHTML = node.properties.currentYear.value;
-        //document.getElementById("gd_py").innerHTML = node.properties.lastYear.value;
         }
     node = features['heating.power.consumption.summary.heating'];
     if(node && node.isReady)
@@ -247,9 +288,7 @@ function updateBoilerPage(payload)
         document.getElementById("ph_td").innerHTML = node.properties.currentDay.value;
         document.getElementById("ph_7d").innerHTML = node.properties.lastSevenDays.value;
         document.getElementById("ph_cm").innerHTML = node.properties.currentMonth.value;
-        //document.getElementById("ph_pm").innerHTML = node.properties.lastMonth.value;
         document.getElementById("ph_cy").innerHTML = node.properties.currentYear.value;
-        //document.getElementById("ph_py").innerHTML = node.properties.lastYear.value;
         }
     node = features['heating.power.consumption.summary.dhw'];
     if(node && node.isReady)
@@ -257,8 +296,6 @@ function updateBoilerPage(payload)
         document.getElementById("pd_td").innerHTML = node.properties.currentDay.value;
         document.getElementById("pd_7d").innerHTML = node.properties.lastSevenDays.value;
         document.getElementById("pd_cm").innerHTML = node.properties.currentMonth.value;
-        //document.getElementById("pd_pm").innerHTML = node.properties.lastMonth.value;
         document.getElementById("pd_cy").innerHTML = node.properties.currentYear.value;
-        //document.getElementById("pd_py").innerHTML = node.properties.lastYear.value;
         }
     }

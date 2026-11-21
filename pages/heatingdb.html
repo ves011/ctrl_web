@@ -133,12 +133,15 @@
       </section>
       <section id="boiler-page" class="page">
           <section class="status-group" aria-labelledby="state-title">
-            <h2 id="state-title">Stare</h2>
+            <h2 id="state-title" class="section-header-flex">
+              <span>Stare</span>
+              <span id="comm-state" class="comm-badge is-offline" aria-live="polite">Offline</span>
+            </h2>
             <div class="boiler-metrics">
               <!--"heating.sensors.pressure.supply"-->
               <article class="metric-card">
                 <span class="metric-label">PRESIUNE INSTALATIE</span>
-                <strong id="p_value">1.1</strong>
+                <strong id="p_value">-.-</strong>
                 <span>bar</span>
                 <small style="text-align: right;" id="p_date">data</small>
               </article>
@@ -146,13 +149,13 @@
               <!--"heating.burners.0"-->
               <article class="metric-card">
                 <span class="metric-label">ARZATOR</span>
-                <strong id="burn_state">ON</strong>
+                <strong id="burn_state">--</strong>
                 <small style="text-align: right;" id="burn_date">data</small>
               </article>
               <!--"heating.burners.0.modulation"-->
               <article class="metric-card">
                 <span class="metric-label">MODULATIE</span>
-                <strong id="burn_mod">20</strong>
+                <strong id="burn_mod">--</strong>
                 <span>%</span>
                 <small style="text-align: right;" id="mod_date">data</small>
               </article>
@@ -165,21 +168,21 @@
               <!--"heating.circuits.0.operating.modes.active"-->
               <article class="metric-card">
                 <span class="metric-label">STARE</span>
-                <strong id="h_state">Activa</strong>
+                <strong id="h_state">------</strong>
                 <small style="text-align: right;" id="state_date">data</small>
               </article>
 
               <!--"heating.circuits.0.operating.programs.active"-->
               <article class="metric-card">
                 <span class="metric-label">PROGRAM DE INCALZIRE</span>
-                <strong id="prog_type">Normal</strong>
+                <strong id="prog_type">------</strong>
                 <small style="text-align: right;" id="prog_date">data</small>
               </article>
 
               <!--"heating.circuits.0.operating.programs.normal"-->
               <article class="metric-card">
                 <span class="metric-label">TEMPERATURA SETATA</span>
-                <strong id="temp_set">50</strong>
+                <strong id="temp_set">--</strong>
                 <span>°C</span>
                 <small style="text-align: right;" id="temps_date">data</small>
               </article>
@@ -187,7 +190,7 @@
               <!--"heating.boiler.sensors.temperature.commonSupply"-->
               <article class="metric-card">
                 <span class="metric-label">TEMPERATURA EFECTIVA</span>
-                <strong id="temp_cs">65</strong>
+                <strong id="temp_cs">--</strong>
                 <span>°C</span>
                 <small style="text-align: right;" id="tempcs_date">data</small>
               </article>
@@ -195,7 +198,7 @@
               <!--"heating.boiler.pumps.internal"-->
               <article class="metric-card">
                 <span class="metric-label">POMPA INCALZIRE</span>
-                <strong id="h_pump">ON</strong>
+                <strong id="h_pump">--</strong>
                 <small style="text-align: right;"id="hpump_date">data</small>
               </article>
             </div>
@@ -207,14 +210,14 @@
               <!--"heating.dhw"-->
               <article class="metric-card">
                 <span class="metric-label">STARE</span>
-                <strong id="dhw_state">Activa</strong>
+                <strong id="dhw_state">------</strong>
                 <small style="text-align: right;" id="dhwstate_date">data</small>
               </article>
 
               <!--"heating.dhw.temperature.main"-->
               <article class="metric-card">
                 <span class="metric-label">TEMPERATURA SETATA</span>
-                <strong id="dhw_temp">50</strong>
+                <strong id="dhw_temp">--</strong>
                 <span>°C</span>
                 <small style="text-align: right;" id="dhwtemp_date">data</small>
               </article>
@@ -222,7 +225,7 @@
               <!--"heating.dhw.sensors.temperature.dhwCylinder"-->
               <article class="metric-card">
                 <span class="metric-label">TEMPERATURA IN BOILER</span>
-                <strong id="dhw_ctemp">48.4</strong>
+                <strong id="dhw_ctemp">--</strong>
                 <span>°C</span>
                 <small style="text-align: right;" id="dhwctemp_date">data</small>
               </article>
@@ -230,22 +233,22 @@
               <!--"heating.dhw.sensors.temperature.outlet"-->
               <article class="metric-card">
                 <span class="metric-label">TEMPERATURA LA INCALZITOR</span>
-                <strong id="dhw_htemp">48.4</strong>
+                <strong id="dhw_htemp">--</strong>
                 <span>°C</span>
-                <small style="text-align: right;" id="dhwhtemp_date">2026-11-08T12:53:38</small>
+                <small style="text-align: right;" id="dhwhtemp_date">data</small>
               </article>
 
               <!--"heating.dhw.pumps.secondary"-->
               <article class="metric-card">
                 <span class="metric-label">POMPA APA CALDA</span>
-                <strong id="dhw_pump">ON</strong>
+                <strong id="dhw_pump">--</strong>
                 <small style="text-align: right;" id="dhwpump_date">data</small>
               </article>
             </div>
           </section>
         </section>
         <section class="usage-section" aria-labelledby="usage-title">
-          <h2 id="usage-title">Consum centrala</h2>
+          <h2 id="usage-title">Consum</h2>
           <!-- j.json source entries: heating.gas.consumption.summary.heating; heating.gas.consumption.summary.dhw; heating.power.consumption.summary.heating; heating.power.consumption.summary.dhw. Values use properties.currentDay, lastSevenDays, currentMonth, lastMonth, currentYear, and lastYear. -->
           <div class="usage-table-wrap">
             <table class="usage-table">
@@ -281,7 +284,7 @@
           </div>
         </section>
         <section class="message-section" aria-labelledby="boiler-messages-title">
-          <h2 id="boiler-messages-title">Status centrala</h2>
+          <h2 id="boiler-messages-title">Status</h2>
           <div id="lock-messages" aria-live="polite">
           </div>
           <div id="boiler-messages" aria-live="polite">

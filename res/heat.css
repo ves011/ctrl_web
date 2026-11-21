@@ -773,10 +773,11 @@ nav {
   margin-top:24px
 }
 .usage-section h2 {
-  font:700 16px var(--display);
+  /*font:700 16px var(--display);*/
   margin:0 0 10px
 }
 .usage-table-wrap {
+  margin-left: 20px;
   overflow-x:auto;
   background:#fff;
   border:1px solid #ebeee9;
@@ -822,10 +823,25 @@ nav {
   margin-top:24px
 }
 .message-section h2 {
-  font:700 16px var(--display);
+  /*font:700 16px var(--display);*/
   margin:0 0 10px
 }
+/* Category Subheadings (Service (0), Info (0), Status (2)) */
+.message-group {
+  margin-bottom: 12px;
+}
+
+.message-group-title {
+  margin-left: 20px;
+  margin-bottom: 0px;
+  /*margin: 10px 0 6px;*/
+  font-size: 13px;
+  font-weight: 700;
+  color: #3c423b;
+}
+/*
 .message-row {
+  margin-left: 20px;
   display:flex;
   justify-content:space-between;
   padding:12px 15px;
@@ -833,6 +849,60 @@ nav {
   border-bottom:1px solid #eef0ec;
   font-size:11px
 }
+*/
+.message-row {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  background: #fff;
+  border-bottom: 1px solid #eef0ec;
+  border-left: 3px solid transparent;
+  font-size: 11px;
+}
+/*---------------------------------------------------*/
+.message-row strong {
+  flex-shrink: 0;
+  min-width: 36px;
+}
+
+.message-desc {
+  flex: 1;
+  color: #555e54;
+}
+
+.message-row time {
+  flex-shrink: 0;
+  color: #7c857b;
+  white-space: nowrap;
+}
+
+/* Category Color Accents (applied to both <h3> and .message-row) */
+.message-group-title.message-service {
+  color: #b42318;
+}
+.message-row.message-service {
+  border-left-color: #d92d20;
+  background: #fffbfa;
+}
+
+.message-group-title.message-info {
+  color: #175cd3;
+}
+.message-row.message-info {
+  border-left-color: #2e90fa;
+  background: #f8fbff;
+}
+
+.message-group-title.message-status {
+  color: #3c423b;
+}
+.message-row.message-status {
+  border-left-color: #8b958a;
+}
+/*---------------------------------------------------*/
+
 .message-empty {
   padding:14px;
   color:#929a91;
@@ -1441,4 +1511,33 @@ body.sidebar-hidden .main-content {
   .sidebar,.main-content {
     transition:none
   }
+}
+.state-online {
+  color: #00c000;
+}
+.state-offline {
+  color: #e00000;
+}
+.section-header-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 10px;
+}
+
+.comm-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.comm-badge.is-online {
+  color: #067647;
+  background: #ecfdf3;
+}
+
+.comm-badge.is-offline {
+  color: #b42318;
+  background: #fef3f2;
 }
